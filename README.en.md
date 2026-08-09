@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-CC%20BY--SA%204.0%20%2B%20MIT-blue)
 ![Lang](https://img.shields.io/badge/lang-中文%20%7C%20English-green)
 
-[▶ Take the assessment now (GitHub Pages)](https://suchuyuan.github.io/thinking-assessment/tools/assessment.html) · [🎯 Calibration & Probability Gym](https://suchuyuan.github.io/thinking-assessment/tools/training.html)
+[▶ Take the assessment now (GitHub Pages)](https://lukala23.github.io/thinking-assessment/tools/assessment.html) · [🎯 Calibration & Probability Gym](https://lukala23.github.io/thinking-assessment/tools/training.html)
 
 > No signup, no download, no data collection; results are generated instantly on your device.
 
@@ -31,9 +31,9 @@ Self-improvement of thinking usually fails because it's treated as mysticism. Fi
 
 ## Quick start (3 steps)
 
-1. **Assess**: click [Start now](https://suchuyuan.github.io/thinking-assessment/tools/assessment.html) above, or open [assessment.html](./tools/assessment.html) locally, and complete parts A–C (~90 minutes)
+1. **Assess**: click [Start now](https://lukala23.github.io/thinking-assessment/tools/assessment.html) above, or open [assessment.html](./tools/assessment.html) locally, and complete parts A–C (~90 minutes)
 2. **Get your report**: six-dimension radar chart, automated diagnosis and prescription; export JSON to keep
-3. **Train**: follow the prescription into the [12-week system](./docs/03-训练系统.md), practicing with the [Calibration & Probability Gym](https://suchuyuan.github.io/thinking-assessment/tools/training.html) and the [template library](./docs/04-模板库.md)
+3. **Train**: follow the prescription into the [12-week system](./docs/03-训练系统.md), practicing with the [Calibration & Probability Gym](https://lukala23.github.io/thinking-assessment/tools/training.html) and the [template library](./docs/04-模板库.md)
 
 > Works offline too: clone the repo and open the two files in `tools/` with any browser.
 
