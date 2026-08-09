@@ -5,6 +5,10 @@
 ![License](https://img.shields.io/badge/license-CC%20BY--SA%204.0%20%2B%20MIT-blue)
 ![Lang](https://img.shields.io/badge/lang-中文%20%7C%20English-green)
 
+[▶ 立即在线评估（GitHub Pages）](https://suchuyuan.github.io/thinking-assessment/tools/assessment.html) · [🎯 校准与概率训练馆](https://suchuyuan.github.io/thinking-assessment/tools/training.html)
+
+> 无需注册、无需下载、不收集任何数据；结果即时生成在本设备。
+
 > 一套基于认知科学文献的**思考能力体检 + 12 周重建训练系统**：90 分钟评估产出你的六维思考画像，全自动诊断并生成个性化训练处方；全程在浏览器本地完成，无后端、无注册、不收集任何数据、不调用任何大模型。
 
 ## 它解决什么问题
@@ -27,9 +31,9 @@
 
 ## 快速开始（3 步）
 
-1. **在线评估**：打开 [assessment.html](./tools/assessment.html)（部署后可通过 GitHub Pages 直接访问），按引导完成 A–C 部分（约 90 分钟）
+1. **在线评估**：点击顶部[立即开始](https://suchuyuan.github.io/thinking-assessment/tools/assessment.html)，或本地打开 [assessment.html](./tools/assessment.html)，按引导完成 A–C 部分（约 90 分钟）
 2. **获得报告**：提交后立即生成六维雷达图、自动诊断与个人处方；导出 JSON 存档
-3. **开始训练**：按处方进入 [12 周训练系统](./docs/03-训练系统.md)，配合 [校准与概率训练馆](./tools/training.html) 与 [模板库](./docs/04-模板库.md) 每周练习
+3. **开始训练**：按处方进入 [12 周训练系统](./docs/03-训练系统.md)，配合[校准与概率训练馆](https://suchuyuan.github.io/thinking-assessment/tools/training.html)与[模板库](./docs/04-模板库.md)每周练习
 
 > 没有网络也可以：下载本仓库，用浏览器直接打开 `tools/` 下的两个 HTML 文件即可。
 
