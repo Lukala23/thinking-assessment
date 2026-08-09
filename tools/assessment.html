@@ -369,18 +369,21 @@ h.slice(-5).map(x=>`<tr><td>${x.date}</td>${x.dims.map(v=>`<td>${v}%</td>`).join
 function wrapTxt(ctx,txt,x,y,maxW,lh,draw){let line='';
 for(const ch of String(txt)){if(ctx.measureText(line+ch).width>maxW){if(draw)ctx.fillText(line,x,y);y+=lh;line=ch;}else line+=ch;}
 if(line){if(draw)ctx.fillText(line,x,y);y+=lh;}return y;}
-function secH(ctx,arr,maxW,lh){return arr.reduce((h,s)=>wrapTxt(ctx,s,0,0,maxW,lh,false),0);}
+function secH(ctx,arr,maxW,lh){return arr.reduce((h,s)=>h+wrapTxt(ctx,s,0,0,maxW,lh,false),0);}
 function dlPNG(){const t=T[lang],p=plan12(),diag=diagnosis();
 const W=750,M=40,maxW=W-2*M,lh=30;
 const cv=document.createElement('canvas');const ctx=cv.getContext('2d');ctx.font='15px sans-serif';
 const planLines=[`${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}`,t.daily+'：',...p.daily,t.weekly+'：',...p.weekly,`${lang=='zh'?'七项结构（每周深度思考）':'Seven structures'}:`,...p.c7,t.miles+'：',...p.miles,p.rule];
-const H=90+440+60+6*36+50+secH(ctx,diag,maxW-16,lh)+60+secH(ctx,planLines,maxW-16,lh)+80;
+/* 前缀计入测量，保证测量行数与绘制完全一致（此前测量未加前缀，长文时绘制多行导致底部截断） */
+const diagP=diag.map(x=>'• '+x),planP=planLines.map(x=>'· '+x);
+const H=90+440+28+6*36+22+26+secH(ctx,diagP,maxW-16,lh)+20+26+secH(ctx,planP,maxW-16,lh)+16+24;
 cv.width=W;cv.height=H;
 ctx.fillStyle='#0f1419';ctx.fillRect(0,0,W,H);
 ctx.fillStyle='#e8edf2';ctx.textAlign='left';ctx.textBaseline='alphabetic';
 ctx.font='bold 26px sans-serif';ctx.fillText(t.title,M,52);
 ctx.font='14px sans-serif';ctx.fillStyle='#93a1b0';ctx.fillText(`${R.date} · thinking-assessment`,M,76);
 radarOn(ctx,W/2,90+220,150,R.dims,t.dims,'14px sans-serif');
+ctx.textAlign='left';ctx.textBaseline='alphabetic'; /* 复位：radarOn 内部按角度设置 textAlign/textBaseline，不复位会导致后续所有文字错位 */
 let y=90+440;
 ctx.font='bold 18px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(t.score,M,y);y+=28;
 ctx.font='15px sans-serif';
@@ -389,9 +392,9 @@ ctx.fillStyle='#2b3540';ctx.fillRect(M+180,y-12,380,14);
 ctx.fillStyle=v<50?'#e05d5d':v>=75?'#3fb96f':'#4da3ff';ctx.fillRect(M+180,y-12,380*v/100,14);
 ctx.fillStyle='#e8edf2';ctx.fillText(v+'%',M+575,y);y+=36;});
 y+=22;ctx.font='bold 18px sans-serif';ctx.fillText(t.diagT,M,y);y+=26;ctx.font='15px sans-serif';ctx.fillStyle='#c9d4de';
-diag.forEach(d=>{y=wrapTxt(ctx,'• '+d,M,y,maxW-16,lh,true);});
+diagP.forEach(d=>{y=wrapTxt(ctx,d,M,y,maxW-16,lh,true);});
 y+=20;ctx.font='bold 18px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(t.plan12,M,y);y+=26;ctx.font='15px sans-serif';ctx.fillStyle='#c9d4de';
-planLines.forEach(s=>{y=wrapTxt(ctx,'· '+s,M,y,maxW-16,lh,true);});
+planP.forEach(s=>{y=wrapTxt(ctx,s,M,y,maxW-16,lh,true);});
 y+=16;ctx.fillStyle='#93a1b0';ctx.font='13px sans-serif';
 ctx.fillText(lang=='zh'?'思考能力评估与重建 · 全自动本地评估，无后端、不收集数据':'Thinking Assessment & Reconstruction · fully local, no backend, no data',M,y);
 cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.png`;a.click();},'image/png');}
