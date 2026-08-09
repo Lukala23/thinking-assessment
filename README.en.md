@@ -17,10 +17,11 @@ Self-improvement of thinking usually fails because it's treated as mysticism. Fi
 
 ## Key features
 
-- ✅ **Fully automated**: submit → radar chart + diagnosis + prescription, zero human intervention
-- ✅ **Purely local**: single-file HTML, open-source scoring engine, nothing leaves your browser
+- ✅ **Fully automated**: submit → radar chart + diagnosis + personalized 12-week plan, zero human intervention
+- ✅ **Purely local**: single-file HTML, open-source scoring engine, nothing leaves your browser; reports auto-save locally with history trends
 - ✅ **Bilingual**: UI auto-follows your browser language, manual toggle available
-- ✅ **Traceable**: every item and scoring rule maps to [references](./docs/05-参考文献.md)
+- ✅ **Explainable**: intro page includes six-dimension concept cards and a "how scoring works" panel; every item and rule maps to [references](./docs/05-参考文献.md)
+- ✅ **Shareable**: one-tap long-image PNG report + share text
 - ✅ **Retestable**: export JSON; retest after 12 weeks to see your change
 
 ## Quick start (3 steps)

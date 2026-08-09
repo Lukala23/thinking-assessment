@@ -64,15 +64,26 @@ canvas{display:block;margin:10px auto;background:#10161d;border-radius:10px}
 const T={
 zh:{title:"思考能力评估与重建",prev:"上一步",next:"下一步",submit:"提交并生成报告",restart:"重新开始",
 steps:["说明","A1 认知反射","A2 偏见情境","A3 概率直觉","A4 校准","B 行为自评","C 实战","报告"],
+dimDesc:["能否抵抗锚定、沉没成本、基率忽视等直觉错误。这是思考的'防弹衣'——决策质量的第一道防线。","你说 90% 把握的事是否真有 90% 成真。校准是预测与决策质量最强的单一指标（Tetlock 超预测研究）。","能否实时觉察自己正在怎么思考、被什么情绪影响。它决定了你有没有机会修正自己。","能否定义问题、拆解、挖出隐藏假设、追到根因。想得深，才能想得对。","是否主动寻找反面证据、能否把反对意见陈述到最强。对抗确认偏误的关键。","是否写下来、记预测、事后复盘。不闭环的思考无法复利，经验会白白流失。"],
+dimHow:["A1 认知反射题 + A2 情境题 + A3 概率题","A4 区间估计命中数 + B 部分量化习惯","A1 直觉改正率 + B 部分元认知习惯","B 部分结构习惯 + C 实战的定义/拆解/假设/证据","B 部分开放行为 + C 实战的反方考虑","B 部分记录习惯 + C 实战的改判条件与行动性"],
+whyTitle:"评估方式与合理性（点击展开）",
+why:`<p>· <b>A1 / A3 / A4 / B 由程序自动判分</b>：A1 用经典认知反射测验（Frederick, 2005）；A4 校准范式来自 Lichtenstein 等（1982）；B 部分测量真实行为而非态度。</p>
+<p>· <b>A2 与 C 部分采用清单式引导自评</b>：开放题在无大模型条件下无法自动批改，程序展示标准要点，由你对照勾选、程序汇总。请像批改别人的答卷一样评分。</p>
+<p>· <b>为什么测这六项</b>：它们是认知科学文献中与真实决策质量关联最紧密、且可训练的成分（详见 docs/05 参考文献）。</p>`,
 intro:`<h2>这套评估是什么</h2>
-<p>一份基于认知科学文献（CRT 认知反射、校准研究、超预测研究）设计的思考能力体检：约 90 分钟，产出你的<b>六维思考画像</b>、自动诊断与个性化训练处方。</p>
+<p>一份基于认知科学文献（CRT 认知反射、校准研究、超预测研究）设计的思考能力体检：约 90 分钟，产出你的<b>六维思考画像</b>、自动诊断与个性化 12 周提升方案。结果即时生成并自动保存在本设备，可随时导出或生成长图分享。</p>
+<h2>我们评估什么</h2>
+<div id="dimcards"></div>
 <h2>规则</h2>
 <ul><li>A 部分<b>不要查资料</b>——考的是你的直觉与现有知识。</li>
 <li>B、C 部分凭<b>真实行为</b>作答，不要按"应该怎么做"答。</li>
 <li>全部评分在<b>你的浏览器本地完成</b>：无后端、无注册、不收集任何数据。</li></ul>
+<details class="card"><summary style="cursor:pointer;font-weight:600">__WHY__</summary>__WHYBODY__</details>
 <p class="hint">免责声明：本工具用于自我训练参考，非心理测量学诊断，不构成医疗/投资建议。</p>`,
 gut:"直觉答案（第一反应）",fin:"检查后的最终答案",a2rule:"写下你的回答，然后展开参考要点，按覆盖程度自评。",
 showpts:"展开参考要点并自评",got:"答到要点 (1 分)",half:"部分答到 (0.5)",miss:"没答到 (0)",
+check:"勾选你的回答覆盖的要点（得分=勾选数÷3）",honest:"请像批改别人的答卷一样勾选，避免自我宽容",plan12:"你的个性化 12 周提升方案",daily:"每日动作",weekly:"每周动作",miles:"关键节点",w12:"W1–2 觉察期：只上最小动作，连续 14 天",w34:"W3–4：加入每周深度练习，产出第一次预验尸",w56:"W5–6：用外部视角验证你最想当然的那个假设",w78:"W7–8：中期复测（训练馆 B–H 组），目标命中 ≥ 7/10",w912:"W9–12：月度预测核对 + 完整重测本评估，对比变化",gym:"打开校准与概率训练馆",img:"生成报告长图 PNG",copy:"复制分享文案",copied:"已复制",
+histT:"历史记录",histNone:"暂无历史记录（报告会自动保存在本设备浏览器中）",histNote:"历史记录保存在本设备浏览器（localStorage），清除浏览器数据会丢失；重要结果请用『导出 JSON』备份。",
 a4rule:"对每个量给出你认为<b>有 90% 把握包含真实值</b>的区间。10 个区间期望命中 9 个——宁可宽，不要自信地窄。",
 lo:"下限",hi:"上限",reveal:"全部提交，揭晓答案",bnote:"凭<b>过去一年的真实行为</b>作答：1=从不，5=总是。",
 ctimer:"开始 40 分钟计时",cstop:"结束作答",crem:"剩余",
@@ -84,15 +95,26 @@ correct:"✓ 正确",wrong:"✗ 正确应为",hit:"命中",missi:"未命中",a4h
 levels:{lo:"显著偏低",midl:"偏低",mid:"中等",midh:"中上",hi:"良好"}}
 ,en:{title:"Thinking Assessment & Reconstruction",prev:"Back",next:"Next",submit:"Submit & Generate Report",restart:"Restart",
 steps:["Intro","A1 Cognitive Reflection","A2 Bias Scenarios","A3 Probability","A4 Calibration","B Self-Rating","C Real Problem","Report"],
+dimDesc:["Resisting anchoring, sunk cost, base-rate neglect and other intuitive errors — the first line of defense for decision quality.","Do things you're 90% sure about happen ~90% of the time? Calibration is the single strongest predictor of real-world forecasting skill (Tetlock).","Real-time awareness of how you're thinking and which emotions are steering you. Without it you never get the chance to correct yourself.","Defining and decomposing problems, surfacing hidden assumptions, digging to root causes. Depth before accuracy.","Actively seeking opposing evidence and steelmanning counter-views. The antidote to confirmation bias.","Writing things down, recording predictions, reviewing outcomes. Thinking that isn't closed-loop never compounds.",],
+dimHow:["A1 reflection items + A2 scenarios + A3 probability","A4 interval hits + quantitative habits in Part B","A1 gut-correction rate + metacognitive habits in Part B","Structured habits in Part B + definition/decomposition/assumptions/evidence in Part C","Open behaviors in Part B + counter-views in Part C","Recording habits in Part B + falsifiers & actionability in Part C"],
+whyTitle:"How scoring works & why it's valid (expand)",
+why:`<p>· <b>A1 / A3 / A4 / B are machine-graded</b>: A1 uses classic Cognitive Reflection items (Frederick, 2005); A4 follows the calibration paradigm of Lichtenstein et al. (1982); Part B measures actual behavior, not attitudes.</p>
+<p>· <b>A2 and Part C use checklist-guided self-grading</b>: open questions cannot be auto-graded without an LLM; the program shows model key points, you check coverage, the program aggregates. Grade as if you were marking someone else's paper.</p>
+<p>· <b>Why these six</b>: they are the components most tightly linked to real decision quality in the cognitive-science literature — and all trainable (see docs/05).</p>`,
 intro:`<h2>What this assessment is</h2>
-<p>A thinking-skills checkup grounded in cognitive science (CRT, calibration research, superforecasting). ~90 minutes; produces your <b>six-dimension thinking profile</b>, an automated diagnosis and a personalized training prescription.</p>
+<p>A thinking-skills checkup grounded in cognitive science (CRT, calibration research, superforecasting). ~90 minutes; produces your <b>six-dimension thinking profile</b>, an automated diagnosis and a personalized 12-week plan. Results appear instantly, are saved on this device, and can be exported or shared as an image.</p>
+<h2>What we measure</h2>
+<div id="dimcards"></div>
 <h2>Rules</h2>
 <ul><li>Part A: <b>no looking things up</b> — it tests intuition and existing knowledge.</li>
 <li>Parts B & C: answer by <b>actual behavior</b>, not by how one "should" behave.</li>
 <li>All scoring happens <b>locally in your browser</b>: no backend, no signup, no data collection.</li></ul>
+<details class="card"><summary style="cursor:pointer;font-weight:600">__WHY__</summary>__WHYBODY__</details>
 <p class="hint">Disclaimer: for self-training reference only; not a psychometric diagnosis; not medical/financial advice.</p>`,
 gut:"Gut answer (first instinct)",fin:"Final answer after checking",a2rule:"Write your answer, then expand the reference points and self-grade coverage.",
 showpts:"Show reference points & self-grade",got:"Covered (1 pt)",half:"Partly (0.5)",miss:"Missed (0)",
+check:"Check the key points your answer covered (score = checked ÷ 3)",honest:"Grade as if marking someone else's paper — avoid self-leniency",plan12:"Your personalized 12-week plan",daily:"Daily",weekly:"Weekly",miles:"Milestones",w12:"W1–2 Awareness: minimum actions only, 14 consecutive days",w34:"W3–4: add the weekly deep-thinking session; first pre-mortem",w56:"W5–6: test your most taken-for-granted assumption with outside data",w78:"W7–8: mid retest (Gym sets B–H); target ≥ 7/10 hits",w912:"W9–12: monthly prediction review + full retest of this assessment",gym:"Open the Calibration & Probability Gym",img:"Save report as long image (PNG)",copy:"Copy share text",copied:"Copied",
+histT:"History",histNone:"No history yet (reports are auto-saved in this browser)",histNote:"History lives in this browser's localStorage and is lost if browser data is cleared — back up important results with 'Export JSON'.",
 a4rule:"For each quantity give an interval you are <b>90% confident</b> contains the true value. Expect 9 hits out of 10 — prefer wide over confidently narrow.",
 lo:"Low",hi:"High",reveal:"Submit all & reveal",bnote:"Answer by your <b>actual behavior in the past year</b>: 1 = never, 5 = always.",
 ctimer:"Start 40-min timer",cstop:"Finish writing",crem:"left",
@@ -164,7 +186,7 @@ const C=[
 /* ---------- state ---------- */
 let lang=(navigator.language||'zh').toLowerCase().startsWith('zh')?'zh':'en';
 let si=0, R=null;
-const S={a1:A1.map(()=>({gut:'',fin:''})),a2:A2.map(()=>({ans:'',g:-1,open:false})),
+const S={a1:A1.map(()=>({gut:'',fin:''})),a2:A2.map(()=>({ans:'',ck:[false,false,false],open:false})),
 a3:[{est:'',gut:'',exp:false},{est:'',exp:false}],a4:A4.map(()=>({lo:'',hi:''})),a4done:false,
 b:B.map(()=>0),c:{text:'',r:C.map(()=>-1),t:0,timer:null},};
 const $=id=>document.getElementById(id);
@@ -178,17 +200,18 @@ function render(){const t=T[lang],a=$('app');const pct=[0,12,28,44,58,74,90,100]
 $('prog').style.width=pct+'%';$('stepname').textContent=t.steps[si]+' ('+(si+1)+'/8)';
 $('prev').textContent=t.prev;$('prev').style.visibility=si==0?'hidden':'visible';
 $('next').textContent=si==6?t.submit:(si==7?t.restart:t.next);
-if(si==0)a.innerHTML=t.intro;
+if(si==0){a.innerHTML=t.intro.replace('__WHY__',t.whyTitle).replace('__WHYBODY__',t.why);
+$('dimcards').innerHTML=T[lang].dims.map((d,i)=>`<div class="card" style="padding:10px 14px;margin:8px 0"><b>${d}</b><div class="small">${t.dimDesc[i]}</div><div class="small" style="opacity:.7">${lang=='zh'?'怎么测：':'Measured by: '}${t.dimHow[i]}</div></div>`).join('');}
 else if(si==1)a.innerHTML=`<p class="hint">A1 · ${lang=='zh'?'每题记录两个答案：第一反应与最终答案。':'Record two answers per question: gut and final.'}</p>`+
 A1.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div><div class="row">
 <label>${t.gut}</label><input type="text" data-k="a1.${i}.gut" value="${S.a1[i].gut}">
 <label>${t.fin}</label><input type="text" data-k="a1.${i}.fin" value="${S.a1[i].fin}"></div></div>`).join('');
-else if(si==2)a.innerHTML=`<p class="hint">A2 · ${t.a2rule}</p>`+
+else if(si==2)a.innerHTML=`<p class="hint">A2 · ${t.a2rule}</p><p class="small">⚠️ ${t.honest}</p>`+
 A2.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div>
 <textarea data-k="a2.${i}.ans" placeholder="...">${S.a2[i].ans}</textarea>
 <button class="btn ghost" onclick="S.a2[${i}].open=!S.a2[${i}].open;render()">${t.showpts}</button>
-<div class="ans ${S.a2[i].open?'show':''}"><b>${lang=='zh'?'参考要点':'Key points'}：</b><ul>${(lang=='zh'?q.pz:q.pe).map(p=>'<li>'+p+'</li>').join('')}</ul>
-<div class="seg">${[[1,t.got],[0.5,t.half],[0,t.miss]].map(([v,lb])=>`<button class="${S.a2[i].g==v?'on':''}" onclick="S.a2[${i}].g=${v};render()">${lb}</button>`).join('')}</div></div></div>`).join('');
+<div class="ans ${S.a2[i].open?'show':''}"><b>${t.check}：</b><ul style="list-style:none">${(lang=='zh'?q.pz:q.pe).map((p,j)=>`<li style="margin:6px 0"><label><input type="checkbox" style="width:auto;margin-right:6px" ${S.a2[i].ck[j]?'checked':''} onchange="S.a2[${i}].ck[${j}]=this.checked;render()">${p}</label></li>`).join('')}</ul>
+<div class="small">${lang=='zh'?'本题得分':'Score'}: ${(S.a2[i].ck.filter(Boolean).length/3).toFixed(2)} / 1</div></div></div>`).join('');
 else if(si==3)a.innerHTML=`<p class="hint">A3 · ${lang=='zh'?'给出百分比数字即可。':'Enter a percentage number.'}</p>`+
 A3.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div><div class="row">
 <input type="number" data-k="a3.${i}.est" value="${S.a3[i].est}" placeholder="%">
@@ -230,7 +253,7 @@ s.a1gutWrong=A1.map((q,i)=>S.a1[i].gut&&!a1ok(i,S.a1[i].gut)?1:0);
 s.a1corr=A1.map((q,i)=>s.a1gutWrong[i]&&s.a1[i]?1:0);
 s.a1sum=s.a1.reduce((x,y)=>x+y,0);s.a1corrSum=s.a1corr.reduce((x,y)=>x+y,0);
 const gw=s.a1gutWrong.reduce((x,y)=>x+y,0);
-s.a2=S.a2.map(x=>x.g<0?0:x.g);s.a2sum=s.a2.reduce((x,y)=>x+y,0);
+s.a2=S.a2.map(x=>x.ck.filter(Boolean).length/3);s.a2sum=s.a2.reduce((x,y)=>x+y,0);
 const v1=num(S.a3[0].est),v2=num(S.a3[1].est);
 s.a3=[(v1>=14&&v1<=20)?2:(v1<50?1:0),(v2>=35&&v2<=45)?2:((v2>=10&&v2<80)?1:0)];
 s.a3sum=s.a3[0]+s.a3[1];
@@ -259,48 +282,109 @@ if(low>=4)d.push(zh?"多数维度 < 50%：正常起点，不必焦虑。严格�
 else if(high>=4)d.push(zh?"多数维度 > 75%：工具层已成型，瓶颈在复杂实战。把重心换成真实重大决策的完整分析 + 寻找思考伙伴互相批评（模块 F）。":"Most dimensions > 75%: tools are in place; the bottleneck is complex real-world practice (Module F).");
 if(!d.length)d.push(zh?"未发现单一显著短板：优先打磨最低的 1–2 个维度即可。":"No single glaring weakness: polish your 1–2 lowest dimensions.");
 return d;}
-function prescription(){const zh=lang=='zh',d=R.dims,t=T[lang].dims;
+const ACT={
+zh:{daily:["偏见快照：每晚回想今天一个可能被直觉/偏见影响的时刻","万物皆估：估一个数量级，查证后记录差距","决策前三问：我在想什么 / 证据是什么 / 反方怎么说","把当天遇到的一个问题用一句话表述清楚","主动找一条与你观点相反的信息","决策日志一句话：今天做了什么决定、预期什么、把握多大"],
+weekly:["用 docs/04 偏见速查卡，识别 2 个决策情境中的偏见","做一组训练馆校准题（B–H 组轮换）","写一条'我此刻的思考方式'元认知记录","45 分钟深度思考工作表（docs/04 模板）","一次钢人论证练习：把反对意见完整陈述（docs/04 模板）","逐条核对预测，复盘最痛的一条落空"]},
+en:{daily:["Bias snapshot: each evening recall one moment intuition/bias may have steered you","Estimate one magnitude daily, verify it, log the gap","Three questions before decisions: what am I thinking / what's the evidence / what would critics say","State one problem you faced today in a single sentence","Deliberately find one piece of information against your view","One-line decision journal: what I decided, what I expect, how confident"],
+weekly:["Spot biases in 2 decision scenarios (cheat sheet in docs/04)","Do one calibration set in the Gym (rotate sets B–H)","Write one 'how am I thinking right now' metacognition note","45-min deep-thinking worksheet (docs/04)","One steelman drill: state the strongest counter-view (docs/04)","Check predictions one by one; review the most painful miss"]}};
+function plan12(){const t=T[lang],d=R.dims;
 const order=d.map((v,i)=>[v,i]).sort((a,b)=>a[0]-b[0]);
-const map=[["模块 D：偏见识别日常练习 + 决策日志（03 文件）","Module D: daily bias-spotting + decision journal (docs/03)"],
-["模块 C：校准训练——每日'万物皆估' + 训练馆每周套题（training.html）","Module C: calibration — daily estimation + weekly sets in training.html"],
-["模块 A：元认知三问——决策前'我在想什么/证据是什么/反方怎么说'","Module A: metacognition three-questions before decisions"],
-["模块 B：结构化——每周 45 分钟深度思考工作表（04 文件）","Module B: structure — weekly 45-min deep-thinking worksheet (docs/04)"],
-["模块 D：魔鬼代言人 + 钢人论证（04 文件模板）","Module D: devil's advocate + steelman (docs/04 templates)"],
-["模块 E：决策日志 + 预测记录 + 月度复盘（04 文件模板）","Module E: decision journal + predictions + monthly review (docs/04)"]];
-return [zh?`最弱维度：${t[order[0][1]]}（${order[0][0]}%）→ ${map[order[0][1]][0]}`:`Weakest: ${t[order[0][1]]} (${order[0][0]}%) → ${map[order[0][1]][1]}`,
-zh?`次弱维度：${t[order[1][1]]}（${order[1][0]}%）→ ${map[order[1][1]][0]}`:`Second: ${t[order[1][1]]} (${order[1][0]}%) → ${map[order[1][1]][1]}`,
-zh?"执行规则：只修这 1–2 个维度，坚持 4 周再评估；第 1–2 周只做最小动作（日志一句话 + 每日估一数）。":"Rule: fix only these 1–2 dimensions for 4 weeks; weeks 1–2 do only the minimum actions."];}
-function radar(cv,vals,labels){const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H/2,r=Math.min(W,H)/2-46;
-ctx.clearRect(0,0,W,H);ctx.strokeStyle='#2b3540';ctx.fillStyle='#93a1b0';ctx.font='12px sans-serif';
+const w1=order[0][1],w2=order[1][1];
+return {focus:[`${t.dims[w1]} (${d[w1]}%)`,`${t.dims[w2]} (${d[w2]}%)`],
+daily:[ACT[lang].daily[w1],ACT[lang].daily[w2]],
+weekly:[ACT[lang].weekly[w1],ACT[lang].weekly[w2]],
+miles:[t.w12,t.w34,t.w56,t.w78,t.w912],
+rule:lang=='zh'?"只修这 1–2 个维度，坚持 4 周再评估；第 1–2 周只做最小动作。":"Fix only these 1–2 dimensions for 4 weeks; weeks 1–2 minimum actions only."};}
+function radarOn(ctx,cx,cy,r,vals,labels,font){ctx.strokeStyle='#2b3540';ctx.fillStyle='#93a1b0';ctx.font=font||'12px sans-serif';
 for(const g of[0.25,0.5,0.75,1]){ctx.beginPath();for(let i=0;i<=6;i++){const a=Math.PI*2*i/6-Math.PI/2;
 ctx[i?'lineTo':'moveTo'](cx+r*g*Math.cos(a),cy+r*g*Math.sin(a));}ctx.stroke();}
 ctx.beginPath();vals.forEach((v,i)=>{const a=Math.PI*2*i/6-Math.PI/2,rr=r*v/100;
 ctx[i?'lineTo':'moveTo'](cx+rr*Math.cos(a),cy+rr*Math.sin(a));});ctx.closePath();
 ctx.fillStyle='rgba(77,163,255,.25)';ctx.fill();ctx.strokeStyle='#4da3ff';ctx.stroke();
-labels.forEach((lb,i)=>{const a=Math.PI*2*i/6-Math.PI/2;ctx.textAlign=Math.abs(Math.cos(a))<0.3?'center':(Math.cos(a)>0?'left':'right');
-ctx.fillText(`${lb} ${vals[i]}%`,cx+(r+22)*Math.cos(a),cy+(r+22)*Math.sin(a));});}
-function renderReport(){const t=T[lang],a=$('app');if(!R)grade();
-const md=mdReport();
+labels.forEach((lb,i)=>{const a=Math.PI*2*i/6-Math.PI/2;ctx.textAlign=Math.abs(Math.cos(a))<0.3?'center':(Math.cos(a)>0?'left':'right');ctx.textBaseline='middle';
+ctx.fillText(`${lb} ${vals[i]}%`,cx+(r+24)*Math.cos(a),cy+(r+24)*Math.sin(a));});}
+function radar(cv,vals,labels){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);
+radarOn(ctx,cv.width/2,cv.height/2,Math.min(cv.width,cv.height)/2-46,vals,labels);}
+function renderReport(){const t=T[lang],a=$('app');if(!R)grade();saveHist();
+const p=plan12();
 a.innerHTML=`<h2>${t.score}</h2>
 <canvas id="cv" width="640" height="460" style="max-width:100%"></canvas>
 <table><tr><th></th>${t.dims.map(d=>`<th>${d}</th>`).join('')}</tr>
-<tr><td>%</td>${R.dims.map(v=>`<td class="${v<50?'bad':v>=75?'good':''}">${v}% <span class="small">${lv(v)}</span></td>`).join('')}</tr></table>
+<tr><td>%</td>${R.dims.map(v=>`<td class="${v<50?'bad':v>=75?'good':''}">${v}% <span class="small">${lv(v)}</span></td>`).join('')}</tr>
+<tr><td class="small">${lang=='zh'?'测什么':'Measures'}</td>${t.dimHow.map(x=>`<td class="small" style="font-size:11px">${x}</td>`).join('')}</tr></table>
 <div id="cmp"></div>
 <h2>${t.diagT}</h2><div class="card">${diagnosis().map(d=>`<p>• ${d}</p>`).join('')}</div>
-<h2>${t.prescT}</h2><div class="card">${prescription().map(p=>`<p>• ${p}</p>`).join('')}
-<p class="small">${lang=='zh'?'训练系统详见 docs/03，模板见 docs/04，练习工具见 training.html。':'See docs/03 for the training system, docs/04 for templates, training.html for drills.'}</p></div>
+<h2>${t.plan12}</h2><div class="card">
+<p><b>${lang=='zh'?'重点维度':'Focus'}：</b>${p.focus.join(' · ')}</p>
+<p><b>${t.daily}</b></p><ul>${p.daily.map(x=>`<li>${x}</li>`).join('')}</ul>
+<p><b>${t.weekly}</b></p><ul>${p.weekly.map(x=>`<li>${x}</li>`).join('')}</ul>
+<p><b>${t.miles}</b></p><ul>${p.miles.map(x=>`<li>${x}</li>`).join('')}</ul>
+<p class="small">${p.rule} ${lang=='zh'?'完整训练系统：docs/03；模板：docs/04。':'Full system: docs/03; templates: docs/04.'}</p>
+<p><a class="btn ghost" style="display:inline-block;text-decoration:none" href="training.html">${t.gym} →</a></p></div>
+<div class="card"><b>${t.histT}</b><div id="hist"></div></div>
 <p class="hint">${t.reportTip}</p>
-<div class="row"><button class="btn" onclick="dlJSON()">${t.export}</button>
+<div class="row"><button class="btn" onclick="dlPNG()">${t.img}</button>
+<button class="btn ghost" onclick="copyShare(this)">${t.copy}</button>
+<button class="btn ghost" onclick="dlJSON()">${t.export}</button>
 <button class="btn ghost" onclick="dlMD()">${t.md}</button>
 <button class="btn ghost" onclick="$('fi').click()">${t.import}</button>
 <input type="file" id="fi" accept=".json" style="display:none" onchange="cmpJSON(this)"></div>`;
-radar($('cv'),R.dims,t.dims);}
+radar($('cv'),R.dims,t.dims);renderHist();}
 /* ---------- export / compare ---------- */
 function dlJSON(){const b=new Blob([JSON.stringify(R,null,1)],{type:'application/json'});
 const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.json`;a.click();}
-function mdReport(){const t=T[lang],s=R.scores;
+function mdReport(){const t=T[lang],s=R.scores,p=plan12();
 return `# ${t.title} — Report\n\nDate: ${R.date}\n\n## ${t.score}\n\n| | ${t.dims.join(' | ')} |\n|---|${t.dims.map(()=>'---').join('|')}|\n| % | ${R.dims.join('% | ')}% |\n\n`+
-`- A1: ${s.a1sum}/4 (gut-corrected: ${s.a1corrSum})\n- A2: ${s.a2sum}/6\n- A3: ${s.a3sum}/4\n- A4 hits: ${s.a4hits}/10\n- C: ${s.csum}/21\n\n## ${t.diagT}\n\n${diagnosis().map(d=>'- '+d).join('\n')}\n\n## ${t.prescT}\n\n${prescription().map(p=>'- '+p).join('\n')}\n`;}
+`- A1: ${s.a1sum}/4 (gut-corrected: ${s.a1corrSum})\n- A2: ${s.a2sum.toFixed(2)}/6\n- A3: ${s.a3sum}/4\n- A4 hits: ${s.a4hits}/10\n- C: ${s.csum}/21\n\n## ${t.diagT}\n\n${diagnosis().map(d=>'- '+d).join('\n')}\n\n## ${t.plan12}\n\n${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}\n\n${t.daily}:\n${p.daily.map(x=>'- '+x).join('\n')}\n\n${t.weekly}:\n${p.weekly.map(x=>'- '+x).join('\n')}\n\n${t.miles}:\n${p.miles.map(x=>'- '+x).join('\n')}\n\n> ${p.rule}\n`;}
+/* ---------- history (localStorage) ---------- */
+function histGet(){try{return JSON.parse(localStorage.getItem('ta_history'))||[]}catch(e){return[]}}
+function saveHist(){const h=histGet(),last=h[h.length-1];
+if(last&&last.date==R.date&&JSON.stringify(last.dims)==JSON.stringify(R.dims))return;
+h.push({date:R.date,dims:R.dims.slice()});try{localStorage.setItem('ta_history',JSON.stringify(h.slice(-20)))}catch(e){}}
+function renderHist(){const t=T[lang],h=histGet(),el=$('hist');if(!el)return;
+if(h.length<=1){el.innerHTML=`<p class="small">${t.histNone}</p><p class="small">${t.histNote}</p>`;return;}
+const prev=h[h.length-2];
+el.innerHTML=`<table><tr><th>${lang=='zh'?'日期':'Date'}</th>${t.dims.map(d=>`<th>${d}</th>`).join('')}</tr>`+
+h.slice(-5).map(x=>`<tr><td>${x.date}</td>${x.dims.map(v=>`<td>${v}%</td>`).join('')}</tr>`).join('')+`</table>
+<p class="small"><b>${lang=='zh'?'上次→本次':'Last→now'}：</b>${R.dims.map((v,j)=>{const d=v-prev.dims[j];return `${t.dims[j]} ${d>0?'+':''}${d}`;}).join(' · ')}</p>
+<p class="small">${t.histNote}</p>`;}
+/* ---------- long image & share ---------- */
+function wrapTxt(ctx,txt,x,y,maxW,lh,draw){let line='';
+for(const ch of String(txt)){if(ctx.measureText(line+ch).width>maxW){if(draw)ctx.fillText(line,x,y);y+=lh;line=ch;}else line+=ch;}
+if(line){if(draw)ctx.fillText(line,x,y);y+=lh;}return y;}
+function secH(ctx,arr,maxW,lh){return arr.reduce((h,s)=>wrapTxt(ctx,s,0,0,maxW,lh,false),0);}
+function dlPNG(){const t=T[lang],p=plan12(),diag=diagnosis();
+const W=750,M=40,maxW=W-2*M,lh=30;
+const cv=document.createElement('canvas');const ctx=cv.getContext('2d');ctx.font='15px sans-serif';
+const planLines=[`${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}`,t.daily+'：',...p.daily,t.weekly+'：',...p.weekly,t.miles+'：',...p.miles,p.rule];
+const H=90+440+60+6*36+50+secH(ctx,diag,maxW-16,lh)+60+secH(ctx,planLines,maxW-16,lh)+80;
+cv.width=W;cv.height=H;
+ctx.fillStyle='#0f1419';ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#e8edf2';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+ctx.font='bold 26px sans-serif';ctx.fillText(t.title,M,52);
+ctx.font='14px sans-serif';ctx.fillStyle='#93a1b0';ctx.fillText(`${R.date} · thinking-assessment`,M,76);
+radarOn(ctx,W/2,90+220,150,R.dims,t.dims,'14px sans-serif');
+let y=90+440;
+ctx.font='bold 18px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(t.score,M,y);y+=28;
+ctx.font='15px sans-serif';
+R.dims.forEach((v,i)=>{ctx.fillStyle='#93a1b0';ctx.fillText(t.dims[i],M,y);
+ctx.fillStyle='#2b3540';ctx.fillRect(M+180,y-12,380,14);
+ctx.fillStyle=v<50?'#e05d5d':v>=75?'#3fb96f':'#4da3ff';ctx.fillRect(M+180,y-12,380*v/100,14);
+ctx.fillStyle='#e8edf2';ctx.fillText(v+'%',M+575,y);y+=36;});
+y+=22;ctx.font='bold 18px sans-serif';ctx.fillText(t.diagT,M,y);y+=26;ctx.font='15px sans-serif';ctx.fillStyle='#c9d4de';
+diag.forEach(d=>{y=wrapTxt(ctx,'• '+d,M,y,maxW-16,lh,true);});
+y+=20;ctx.font='bold 18px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(t.plan12,M,y);y+=26;ctx.font='15px sans-serif';ctx.fillStyle='#c9d4de';
+planLines.forEach(s=>{y=wrapTxt(ctx,'· '+s,M,y,maxW-16,lh,true);});
+y+=16;ctx.fillStyle='#93a1b0';ctx.font='13px sans-serif';
+ctx.fillText(lang=='zh'?'思考能力评估与重建 · 全自动本地评估，无后端、不收集数据':'Thinking Assessment & Reconstruction · fully local, no backend, no data',M,y);
+cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.png`;a.click();},'image/png');}
+function copyShare(btn){const t=T[lang],p=plan12();
+const txt=`${t.title} · ${lang=='zh'?'我的思考画像':'my thinking profile'} (${R.date})\n`+t.dims.map((d,i)=>`${d} ${R.dims[i]}%`).join(' · ')+
+`\n${lang=='zh'?'重点提升':'Focus'}: ${p.focus.join(', ')}`;
+const done=()=>{btn.textContent=t.copied;setTimeout(()=>btn.textContent=t.copy,1500);};
+const fallback=()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();
+try{document.execCommand('copy')}catch(e){}ta.remove();done();};
+if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(fallback);else fallback();}
 function dlMD(){const b=new Blob([mdReport()],{type:'text/markdown'});
 const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.md`;a.click();}
 function cmpJSON(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();
