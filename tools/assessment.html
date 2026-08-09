@@ -310,7 +310,11 @@ $('cmp').innerHTML=`<h2>${t.delta} (${o.date})</h2><table><tr><th></th>${t.dims.
 }catch(e){alert('Invalid JSON');}};rd.readAsText(f);}
 /* ---------- nav & init ---------- */
 document.addEventListener('input',e=>{const k=e.target.dataset.k;if(k)setPath(S,k,e.target.value);});
-function go(d){if(d>0&&si==6)grade();
+function go(d){if(d>0){
+if(si==3&&S.a3.some(x=>!String(x.est).trim())){alert(lang=='zh'?'请填写两道概率题的百分比再进入下一步。':'Please fill in both probability answers before continuing.');return;}
+if(si==5&&!S.b.every(v=>v>0)){alert(lang=='zh'?'请完成全部 16 题自评（1–5 分）再继续。':'Please complete all 16 self-ratings before continuing.');return;}
+if(si==6&&!S.c.r.every(v=>v>=0)){alert(lang=='zh'?'请为全部 7 个维度选择等级后再提交。':'Please rate all 7 dimensions before submitting.');return;}
+grade();}
 if(d>0&&si==7){if(confirm(lang=='zh'?'重新开始将清空当前作答。继续？':'Restart will clear current answers. Continue?')){location.reload();}return;}
 si=Math.max(0,Math.min(7,si+d));window.scrollTo(0,0);render();}
 $('lzh').className=lang=='zh'?'on':'';$('len').className=lang=='en'?'on':'';render();
