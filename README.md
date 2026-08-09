@@ -7,6 +7,8 @@
 
 [▶ 立即在线评估（GitHub Pages）](https://lukala23.github.io/thinking-assessment/tools/assessment.html) · [🎯 校准与概率训练馆](https://lukala23.github.io/thinking-assessment/tools/training.html)
 
+> 🇨🇳 国内镜像：[Gitee 仓库](https://gitee.com/Lukala23/thinking-assessment)（GitHub 访问不稳定时使用）
+
 > 无需注册、无需下载、不收集任何数据；结果即时生成在本设备。
 
 > 一套基于认知科学文献的**思考能力体检 + 12 周重建训练系统**：90 分钟评估产出你的六维思考画像，全自动诊断并生成个性化训练处方；全程在浏览器本地完成，无后端、无注册、不收集任何数据、不调用任何大模型。

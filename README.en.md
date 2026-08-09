@@ -7,6 +7,8 @@
 
 [▶ Take the assessment now (GitHub Pages)](https://lukala23.github.io/thinking-assessment/tools/assessment.html) · [🎯 Calibration & Probability Gym](https://lukala23.github.io/thinking-assessment/tools/training.html)
 
+> 🇨🇳 China mirror: [Gitee repo](https://gitee.com/Lukala23/thinking-assessment) (use when GitHub is slow)
+
 > No signup, no download, no data collection; results are generated instantly on your device.
 
 > A cognitive-science-grounded **thinking-skills checkup + 12-week reconstruction program**. A 90-minute assessment produces your six-dimension thinking profile, a fully automated diagnosis, and a personalized training prescription. Everything runs locally in your browser: no backend, no signup, no data collection, no LLM calls.
