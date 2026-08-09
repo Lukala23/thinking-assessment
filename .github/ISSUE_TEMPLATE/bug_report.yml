@@ -1,0 +1,28 @@
+name: 问题反馈 / Bug Report
+description: 题目错误、评分逻辑问题或页面故障
+title: "[问题] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: where
+    attributes:
+      label: 发生位置
+      options:
+        - tools/assessment.html
+        - tools/training.html
+        - docs 文档内容
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 问题描述
+      description: 如果是题目错误，请附上你认为正确的答案与来源。
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境（可选）
+      description: 浏览器与设备，例如 Safari 18 / macOS、Chrome / Android

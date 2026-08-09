@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>思考能力评估与重建 · Thinking Assessment & Reconstruction</title>
+<style>
+:root{--bg:#0f1419;--card:#1a2129;--line:#2b3540;--tx:#e8edf2;--dim:#93a1b0;--acc:#4da3ff;--ok:#3fb96f;--warn:#e8b93d;--bad:#e05d5d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.7 -apple-system,"PingFang SC","Segoe UI",Roboto,sans-serif;padding-bottom:60px}
+.wrap{max-width:780px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap;gap:8px}
+h1{font-size:18px}h2{font-size:19px;margin:18px 0 10px}h3{font-size:16px;margin:14px 0 6px}
+.lang button{background:none;border:1px solid var(--line);color:var(--dim);padding:3px 10px;border-radius:6px;cursor:pointer;font-size:13px}
+.lang button.on{color:var(--tx);border-color:var(--acc)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:10px 0 4px}
+.bar i{display:block;height:6px;background:var(--acc);border-radius:3px;transition:width .3s}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:12px 0}
+.q{margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:8px}
+.q .t{font-weight:600}
+textarea,input[type=text],input[type=number]{width:100%;background:#0f151c;border:1px solid var(--line);color:var(--tx);border-radius:6px;padding:8px;font-size:15px;margin-top:6px}
+textarea{min-height:90px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+label{color:var(--dim);font-size:14px}
+input[type=text]{max-width:160px}
+.btn{background:var(--acc);color:#04121f;border:none;border-radius:8px;padding:9px 18px;font-size:15px;font-weight:600;cursor:pointer;margin-top:12px}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--tx);font-weight:400}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.nav{display:flex;justify-content:space-between;margin-top:22px}
+.seg button{background:none;border:1px solid var(--line);color:var(--tx);padding:6px 12px;border-radius:6px;cursor:pointer;margin:2px;font-size:14px}
+.seg button.on{background:var(--acc);color:#04121f;border-color:var(--acc)}
+.hint{color:var(--dim);font-size:14px}
+.ans{background:#101820;border-left:3px solid var(--acc);padding:10px 12px;border-radius:6px;margin-top:8px;font-size:14px;display:none}
+.ans.show{display:block}
+.good{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+th{color:var(--dim);font-weight:500}
+canvas{display:block;margin:10px auto;background:#10161d;border-radius:10px}
+.pill{display:inline-block;padding:1px 9px;border-radius:10px;font-size:13px;border:1px solid var(--line);color:var(--dim);margin-left:6px}
+.small{font-size:13px;color:var(--dim)}
+@media(max-width:600px){h1{font-size:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1 id="title">思考能力评估与重建</h1>
+  <div class="lang">
+    <button id="lzh" onclick="setLang('zh')">中文</button>
+    <button id="len" onclick="setLang('en')">English</button>
+  </div>
+</header>
+<div class="bar"><i id="prog" style="width:0%"></i></div>
+<div id="stepname" class="small"></div>
+<div id="app"></div>
+<div class="nav">
+  <button class="btn ghost" id="prev" onclick="go(-1)"></button>
+  <button class="btn" id="next" onclick="go(1)"></button>
+</div>
+</div>
+<script>
+/* ---------- i18n UI ---------- */
+const T={
+zh:{title:"思考能力评估与重建",prev:"上一步",next:"下一步",submit:"提交并生成报告",restart:"重新开始",
+steps:["说明","A1 认知反射","A2 偏见情境","A3 概率直觉","A4 校准","B 行为自评","C 实战","报告"],
+intro:`<h2>这套评估是什么</h2>
+<p>一份基于认知科学文献（CRT 认知反射、校准研究、超预测研究）设计的思考能力体检：约 90 分钟，产出你的<b>六维思考画像</b>、自动诊断与个性化训练处方。</p>
+<h2>规则</h2>
+<ul><li>A 部分<b>不要查资料</b>——考的是你的直觉与现有知识。</li>
+<li>B、C 部分凭<b>真实行为</b>作答，不要按"应该怎么做"答。</li>
+<li>全部评分在<b>你的浏览器本地完成</b>：无后端、无注册、不收集任何数据。</li></ul>
+<p class="hint">免责声明：本工具用于自我训练参考，非心理测量学诊断，不构成医疗/投资建议。</p>`,
+gut:"直觉答案（第一反应）",fin:"检查后的最终答案",a2rule:"写下你的回答，然后展开参考要点，按覆盖程度自评。",
+showpts:"展开参考要点并自评",got:"答到要点 (1 分)",half:"部分答到 (0.5)",miss:"没答到 (0)",
+a4rule:"对每个量给出你认为<b>有 90% 把握包含真实值</b>的区间。10 个区间期望命中 9 个——宁可宽，不要自信地窄。",
+lo:"下限",hi:"上限",reveal:"全部提交，揭晓答案",bnote:"凭<b>过去一年的真实行为</b>作答：1=从不，5=总是。",
+ctimer:"开始 40 分钟计时",cstop:"结束作答",crem:"剩余",
+crub:"对照你的分析，为每个维度选择最符合的等级（每级说明见 docs/02）。",
+score:"得分",dims:["理性/抗偏见","校准度","元认知","结构/深度","开放性","决策闭环"],
+diagT:"自动诊断",prescT:"你的训练处方",export:"导出 JSON（用于复测对比）",md:"下载 Markdown 报告",import:"导入基线 JSON 对比",
+delta:"与基线对比",reportTip:"建议 12 周训练后回来复测：重新完成评估并导入这次的 JSON，查看六维变化。",
+correct:"✓ 正确",wrong:"✗ 正确应为",hit:"命中",missi:"未命中",a4hits:"命中数",
+levels:{lo:"显著偏低",midl:"偏低",mid:"中等",midh:"中上",hi:"良好"}}
+,en:{title:"Thinking Assessment & Reconstruction",prev:"Back",next:"Next",submit:"Submit & Generate Report",restart:"Restart",
+steps:["Intro","A1 Cognitive Reflection","A2 Bias Scenarios","A3 Probability","A4 Calibration","B Self-Rating","C Real Problem","Report"],
+intro:`<h2>What this assessment is</h2>
+<p>A thinking-skills checkup grounded in cognitive science (CRT, calibration research, superforecasting). ~90 minutes; produces your <b>six-dimension thinking profile</b>, an automated diagnosis and a personalized training prescription.</p>
+<h2>Rules</h2>
+<ul><li>Part A: <b>no looking things up</b> — it tests intuition and existing knowledge.</li>
+<li>Parts B & C: answer by <b>actual behavior</b>, not by how one "should" behave.</li>
+<li>All scoring happens <b>locally in your browser</b>: no backend, no signup, no data collection.</li></ul>
+<p class="hint">Disclaimer: for self-training reference only; not a psychometric diagnosis; not medical/financial advice.</p>`,
+gut:"Gut answer (first instinct)",fin:"Final answer after checking",a2rule:"Write your answer, then expand the reference points and self-grade coverage.",
+showpts:"Show reference points & self-grade",got:"Covered (1 pt)",half:"Partly (0.5)",miss:"Missed (0)",
+a4rule:"For each quantity give an interval you are <b>90% confident</b> contains the true value. Expect 9 hits out of 10 — prefer wide over confidently narrow.",
+lo:"Low",hi:"High",reveal:"Submit all & reveal",bnote:"Answer by your <b>actual behavior in the past year</b>: 1 = never, 5 = always.",
+ctimer:"Start 40-min timer",cstop:"Finish writing",crem:"left",
+crub:"Against your written analysis, pick the level that best fits each dimension (full descriptors in docs/02).",
+score:"Score",dims:["Rationality","Calibration","Metacognition","Structure/Depth","Open-mindedness","Decision Loop"],
+diagT:"Automated Diagnosis",prescT:"Your Training Prescription",export:"Export JSON (for retest comparison)",md:"Download Markdown report",import:"Import baseline JSON to compare",
+delta:"vs. baseline",reportTip:"Come back after 12 weeks of training: redo the assessment and import this JSON to see your change.",
+correct:"✓ correct",wrong:"✗ correct answer:",hit:"hit",missi:"miss",a4hits:"Hits",
+levels:{lo:"significantly low",midl:"below avg",mid:"average",midh:"above avg",hi:"strong"}}
+};
+/* ---------- data ---------- */
+const A1=[
+{zh:"一个球拍和一个球总共 1.10 元。球拍比球贵 1.00 元。球多少钱（元）？",en:"A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much is the ball ($)?",a:[0.05],alt:/^5\s*(分|cents?)$/i},
+{zh:"5 台机器用 5 分钟生产 5 个零件。100 台机器生产 100 个零件要多少分钟？",en:"5 machines make 5 widgets in 5 minutes. How many minutes for 100 machines to make 100 widgets?",a:[5]},
+{zh:"睡莲每天面积翻倍，48 天铺满池塘。铺满一半要多少天？",en:"Lily pads double daily and cover a pond in 48 days. How many days to cover half?",a:[47]},
+{zh:"3 个工人挖 3 米沟要 3 小时。100 个工人挖 100 米沟要多少小时？",en:"3 workers dig 3 meters of trench in 3 hours. How many hours for 100 workers to dig 100 meters?",a:[3]}];
+const A2=[
+{zh:"你订了一张 200 元不可退的电影票，出发当天暴雨且你很疲惫。你会去看吗？为什么？",en:"You bought a non-refundable $30 movie ticket. On the day, there's a storm and you're exhausted. Do you go? Why?",
+pz:["指出 200 元已不可收回（沉没成本）","决策只看未来的成本与收益","结论：不去看"],pe:["Identify the money as unrecoverable (sunk cost)","Decide only on future costs and benefits","Conclusion: don't go"]},
+{zh:"某网红股票三个月涨 300%，三个朋友都赚了钱并劝你买入。你的判断过程？",en:"A hyped stock is up 300% in 3 months; three friends profited and urge you to buy. Your reasoning process?",
+pz:["意识到朋友是'幸存者'样本（幸存者偏差）","追问整体买入者的盈亏基率","要求独立证据而非从众"],pe:["Friends are a survivor-biased sample","Ask for the base rate of all buyers","Demand independent evidence, don't herd"]},
+{zh:"先回答：非洲国家占联合国成员国比例高于还是低于 65%？再给出你的具体估计与估计方法。",en:"First: is the share of African UN members above or below 65%? Then give your estimate and method.",
+pz:["意识到 65% 是锚点，不从它出发调整","独立估计（真实约 54/193 ≈ 28%）","说明估计路径（如从非洲国家数推）"],pe:["Recognize 65% as an anchor; don't adjust from it","Estimate independently (true ≈ 54/193 ≈ 28%)","Explain your estimation path"]},
+{zh:"坚持两年的项目持续亏损，团队说'再投最后一笔就能回本'。你怎么决策？",en:"A 2-year project keeps losing money; the team says 'one last investment breaks even'. Your decision?",
+pz:["已投入与决策无关（沉没成本/承诺升级）","只看追加投入的边际回报","设定明确的止损条件"],pe:["Past investment is irrelevant (sunk cost / escalation)","Judge only the marginal return of extra funds","Set an explicit stop-loss condition"]},
+{zh:"'某城市犯罪率上升，且罪犯中移民比例较高'——能否得出'移民更可能犯罪'？说明推理。",en:"'Crime is rising and immigrants are over-represented among offenders' — does it follow that immigrants are more crime-prone? Explain.",
+pz:["需比较移民与非移民各自的犯罪率","考虑混杂因素（年龄、经济状况等）","相关/比例高 ≠ 个体风险高"],pe:["Compare crime rates of immigrants vs non-immigrants","Consider confounders (age, economics)","High share ≠ high individual risk"]},
+{zh:"你非常看好一个新方向，已找到三份支持你的报告。接下来你还应该做什么？",en:"You favor a new direction and found three supporting reports. What should you do next?",
+pz:["主动搜索反对证据（对抗确认偏误）","审查报告来源与利益相关","把最强反对意见写出来（钢人论证）"],pe:["Actively search for opposing evidence","Check sources and conflicts of interest","Write out the strongest counterargument (steelman)"]}];
+const A3=[
+{zh:"患病率 1%；灵敏度 99%；假阳性率 5%。检测阳性时，患病概率约是多少 %？",en:"Prevalence 1%; sensitivity 99%; false-positive rate 5%. Given a positive test, the probability of disease is about what %?",
+exp_zh:"1000 人中约 10 人患病（阳性约 10 人）；990 个健康人中约 5% 即约 50 人假阳性。阳性共约 60 人，真患病 10/60 ≈ 17%。关键：先验基率必须进入计算。",
+exp_en:"Of 1000 people ~10 are sick (~10 true positives); of 990 healthy, ~5% ≈ 50 false positives. ~60 positives in total → 10/60 ≈ 17%. Key point: the base rate must enter the calculation."},
+{zh:"出租车 85% 绿、15% 蓝。目击者说肇事车是蓝色，其辨色准确率 80%。车真是蓝色的概率是多少 %？",en:"85% of cabs are green, 15% blue. A witness says the hit-and-run cab was blue; witness accuracy is 80%. Probability it was really blue (%)?",
+exp_zh:"1000 辆车：150 辆蓝，正确指认 120 次；850 辆绿，错认成蓝 170 次。'说蓝'共 290 次，真蓝 120 → 约 41%。直接用 80% 作答是基率忽视。",
+exp_en:"1000 cabs: 150 blue → 120 correct IDs; 850 green → 170 misidentified as blue. 'Said blue' = 290, truly blue = 120 → ≈41%. Answering 80% is base-rate neglect."}];
+const A4=[
+{zh:"长江全长（公里）",en:"Yangtze River length (km)",a:6300},{zh:"珠穆朗玛峰高度（米）",en:"Everest height (m)",a:8848.86},
+{zh:"地球到月球距离（万公里）",en:"Earth–Moon distance (10⁴ km)",a:38.4},{zh:"《物种起源》出版年份",en:"Origin of Species published (year)",a:1859},
+{zh:"人类首次登月年份",en:"First Moon landing (year)",a:1969},{zh:"成年人骨骼数量（块）",en:"Adult human bones (count)",a:206},
+{zh:"太阳到地球距离（万公里）",en:"Sun–Earth distance (10⁴ km)",a:14960},{zh:"大象怀孕周期（月）",en:"Elephant gestation (months)",a:22},
+{zh:"人类基因数量（万个）",en:"Human genes (10⁴)",a:2},{zh:"历代长城总长（公里）",en:"Great Wall total length (km)",a:21196}];
+const B=[
+["做重要决定前，我会把选项和理由写下来","Before important decisions I write down options and reasons"],
+["我会主动搜索与我观点相反的证据","I actively search for evidence against my views"],
+["我能把反对者的立场陈述到对方认可的程度","I can state an opponent's position to their satisfaction"],
+["我会用数量级/数据支撑关键判断，而非感觉","I back key judgments with magnitudes/data, not feelings"],
+["我会问这件事的本质/结构是什么","I ask what the essence/structure of a problem is"],
+["我会把问题拆成组成部分再逐个处理","I decompose problems into parts and handle them one by one"],
+["我会识别并写下自己的假设","I identify and write down my assumptions"],
+["我做过事前验尸类的反向预演","I've done pre-mortem style reverse rehearsals"],
+["我会主动想我此刻的思考有没有漏洞","I actively check my current thinking for holes"],
+["对关键数字我会先估一个数量级再查证","I estimate magnitudes before verifying key numbers"],
+["复盘时我能把结果坏和决策坏分开","In reviews I separate bad outcomes from bad decisions"],
+["我能说出当前主要影响我判断的情绪","I can name the emotions currently affecting my judgment"],
+["我会追问根因，而不是停在表面解释","I dig for root causes instead of stopping at surface explanations"],
+["被证明错了之后，我会写下我当时为什么错了","When proven wrong I write down why I was wrong"],
+["我会标注某个判断是事实还是猜测","I label judgments as fact vs. guess"],
+["我会记录自己的预测，事后核对对错","I record predictions and check them later"]];
+const BG={struct:[4,5,6,12],open:[1,2,7],quant:[3,9],meta:[8,11,13],loop:[0,10,14,15]}; // 0-based indexes
+const C=[
+["问题定义","跳进方案","目标模糊","写出真问题","说清为何是这个问题","Problem definition","Jumped to solution","Vague goal","States the real question","Explains why this question"],
+["结构拆解","流水账","分点混乱","可处理的子问题","MECE 且有优先级","Structure","Stream of text","Messy bullets","Workable sub-questions","MECE with priorities"],
+["假设识别","全是断言","未察觉假设","列出部分假设","标注翻转性假设","Assumptions","All assertions","Hidden assumptions","Lists some assumptions","Flags the pivotal one"],
+["证据使用","全靠感觉","个别事实","区分事实/推测","每个判断标注依据","Evidence","All feeling","A few facts","Fact vs. guess separated","Every claim sourced"],
+["反方考虑","只写有利面","一笔带过","回应一个反对","钢人论证并回应","Counter-views","One-sided only","Mentioned briefly","Answers one objection","Steelmans and rebuts"],
+["不确定性","斩钉截铁","说了可能","给出置信度","给出改判条件","Uncertainty","Overly certain","Says 'maybe'","Gives confidence","States falsifiers"],
+["可行动结论","无结论","方向空泛","明确下一步","步骤+时间+验证","Actionability","No conclusion","Vague direction","Clear next step","Steps+time+verification"]];
+/* ---------- state ---------- */
+let lang=(navigator.language||'zh').toLowerCase().startsWith('zh')?'zh':'en';
+let si=0, R=null;
+const S={a1:A1.map(()=>({gut:'',fin:''})),a2:A2.map(()=>({ans:'',g:-1,open:false})),
+a3:[{est:'',gut:'',exp:false},{est:'',exp:false}],a4:A4.map(()=>({lo:'',hi:''})),a4done:false,
+b:B.map(()=>0),c:{text:'',r:C.map(()=>-1),t:0,timer:null},};
+const $=id=>document.getElementById(id);
+function setPath(o,p,v){p.split('.').reduce((x,k,i,a)=>i==a.length-1?x[k]=v:x[k],o);}
+function setLang(l){lang=l;$('lzh').className=l=='zh'?'on':'';$('len').className=l=='en'?'on':'';
+document.documentElement.lang=l=='zh'?'zh':'en';$('title').textContent=T[l].title;render();}
+function num(s){s=String(s).replace(/[,，\$¥元分公里米万千个年块月天%]/g,' ').trim();const m=s.match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):NaN;}
+function a1ok(i,raw){const v=num(raw);return A1[i].a.includes(v)||(A1[i].alt&&A1[i].alt.test(String(raw).trim()));}
+/* ---------- render ---------- */
+function render(){const t=T[lang],a=$('app');const pct=[0,12,28,44,58,74,90,100][si];
+$('prog').style.width=pct+'%';$('stepname').textContent=t.steps[si]+' ('+(si+1)+'/8)';
+$('prev').textContent=t.prev;$('prev').style.visibility=si==0?'hidden':'visible';
+$('next').textContent=si==6?t.submit:(si==7?t.restart:t.next);
+if(si==0)a.innerHTML=t.intro;
+else if(si==1)a.innerHTML=`<p class="hint">A1 · ${lang=='zh'?'每题记录两个答案：第一反应与最终答案。':'Record two answers per question: gut and final.'}</p>`+
+A1.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div><div class="row">
+<label>${t.gut}</label><input type="text" data-k="a1.${i}.gut" value="${S.a1[i].gut}">
+<label>${t.fin}</label><input type="text" data-k="a1.${i}.fin" value="${S.a1[i].fin}"></div></div>`).join('');
+else if(si==2)a.innerHTML=`<p class="hint">A2 · ${t.a2rule}</p>`+
+A2.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div>
+<textarea data-k="a2.${i}.ans" placeholder="...">${S.a2[i].ans}</textarea>
+<button class="btn ghost" onclick="S.a2[${i}].open=!S.a2[${i}].open;render()">${t.showpts}</button>
+<div class="ans ${S.a2[i].open?'show':''}"><b>${lang=='zh'?'参考要点':'Key points'}：</b><ul>${(lang=='zh'?q.pz:q.pe).map(p=>'<li>'+p+'</li>').join('')}</ul>
+<div class="seg">${[[1,t.got],[0.5,t.half],[0,t.miss]].map(([v,lb])=>`<button class="${S.a2[i].g==v?'on':''}" onclick="S.a2[${i}].g=${v};render()">${lb}</button>`).join('')}</div></div></div>`).join('');
+else if(si==3)a.innerHTML=`<p class="hint">A3 · ${lang=='zh'?'给出百分比数字即可。':'Enter a percentage number.'}</p>`+
+A3.map((q,i)=>`<div class="q"><div class="t">${i+1}. ${q[lang]}</div><div class="row">
+<input type="number" data-k="a3.${i}.est" value="${S.a3[i].est}" placeholder="%">
+${i==0?`<label>${lang=='zh'?'第一反应':'First instinct'}:</label><input type="number" data-k="a3.0.gut" value="${S.a3[0].gut}" placeholder="%">`:''}
+<button class="btn ghost" onclick="S.a3[${i}].exp=!S.a3[${i}].exp;render()">${lang=='zh'?'查看正确解法':'Show solution'}</button></div>
+<div class="ans ${S.a3[i].exp?'show':''}">${q[lang=='zh'?'exp_zh':'exp_en']}</div></div>`).join('');
+else if(si==4)a.innerHTML=`<p class="hint">A4 · ${t.a4rule}</p><table><tr><th>#</th><th></th><th>${t.lo}</th><th>${t.hi}</th><th id="res"></th></tr>`+
+A4.map((q,i)=>`<tr><td>${i+1}</td><td>${q[lang]}</td>
+<td><input type="number" style="max-width:110px" data-k="a4.${i}.lo" value="${S.a4[i].lo}" ${S.a4done?'disabled':''}></td>
+<td><input type="number" style="max-width:110px" data-k="a4.${i}.hi" value="${S.a4[i].hi}" ${S.a4done?'disabled':''}></td>
+<td id="h${i}"></td></tr>`).join('')+
+`</table>${S.a4done?'':`<button class="btn" onclick="revealA4()">${t.reveal}</button>`}<div id="a4sum"></div>`;
+else if(si==5)a.innerHTML=`<p class="hint">B · ${t.bnote}</p>`+
+B.map((s,i)=>`<div class="q"><div class="t">${i+1}. ${lang=='zh'?s[0]:s[1]}</div><div class="seg">${[1,2,3,4,5].map(v=>`<button class="${S.b[i]==v?'on':''}" onclick="S.b[${i}]=${v};render()">${v}</button>`).join('')}</div></div>`).join('');
+else if(si==6)a.innerHTML=`<p class="hint">C · ${lang=='zh'?'选一个近三个月内真实面对、尚未解决的问题，按 docs/01 的七项结构完成分析（问题定义/拆解/假设/选项/证据标注/决策条件/自我审查）。':'Pick a real, unresolved problem from the last 3 months and analyze it following the 7-part structure in docs/01.'}</p>
+<div class="card"><button class="btn ghost" id="ctbtn" onclick="toggleTimer()">${t.ctimer}</button> <span id="ct" class="pill"></span>
+<textarea data-k="c.text" style="min-height:240px" placeholder="...">${S.c.text}</textarea>
+<button class="btn ghost" onclick="stopTimer()">${t.cstop}</button></div>
+<p class="hint">${t.crub}</p>`+
+C.map((r,i)=>`<div class="q"><div class="t">${i+1}. ${lang=='zh'?r[0]:r[5]}</div><div class="seg">${[0,1,2,3].map(v=>`<button class="${S.c.r[i]==v?'on':''}" title="${lang=='zh'?r[1+v]:r[6+v]}" onclick="S.c.r[${i}]=${v};render()">${v}</button>`).join('')}
+<span class="small" style="margin-left:8px">${S.c.r[i]>=0?(lang=='zh'?r[1+S.c.r[i]]:r[6+S.c.r[i]]):''}</span></div></div>`).join('');
+else if(si==7)renderReport();
+if(si==4&&S.a4done)revealA4(true);
+}
+function toggleTimer(){if(S.c.timer){clearInterval(S.c.timer);S.c.timer=null;render();return;}
+S.c.t=40*60;S.c.timer=setInterval(()=>{S.c.t--;const m=Math.floor(S.c.t/60),s=S.c.t%60;
+const el=$('ct');if(el)el.textContent=`${m}:${String(s).padStart(2,'0')} ${T[lang].crem}`;
+if(S.c.t<=0)stopTimer();},1000);$('ctbtn').textContent=lang=='zh'?'暂停计时':'Pause';}
+function stopTimer(){if(S.c.timer){clearInterval(S.c.timer);S.c.timer=null;}render();}
+function revealA4(keep){if(!keep){S.a4done=true;render();}const t=T[lang];let hits=0;
+A4.forEach((q,i)=>{const lo=num(S.a4[i].lo),hi=num(S.a4[i].hi);const h=lo<=q.a&&q.a<=hi&&!isNaN(lo);
+if(h)hits++;const el=$('h'+i);if(el)el.innerHTML=`<span class="${h?'good':'bad'}">${h?t.hit:t.missi}</span> <span class="small">(${q.a})</span>`;});
+const sum=$('a4sum');if(sum){const msg=hits>=8?(lang=='zh'?'校准良好。':'Well calibrated.'):(hits==7?(lang=='zh'?'轻度过度自信，属常见水平。':'Mild overconfidence — common.'):(lang=='zh'?'显著过度自信：研究显示人群 90% 区间平均仅命中约一半。校准训练应列为首要任务。':'Significant overconfidence: research shows 90% intervals hit only ~half the time. Make calibration your top priority.'));
+sum.innerHTML=`<div class="card"><b>${t.a4hits}: ${hits}/10</b> — <span class="${hits>=8?'good':hits==7?'warn':'bad'}">${msg}</span></div>`;}}
+/* ---------- scoring ---------- */
+function grade(){const s={};
+s.a1=A1.map((q,i)=>a1ok(i,S.a1[i].fin)?1:0);
+s.a1gutWrong=A1.map((q,i)=>S.a1[i].gut&&!a1ok(i,S.a1[i].gut)?1:0);
+s.a1corr=A1.map((q,i)=>s.a1gutWrong[i]&&s.a1[i]?1:0);
+s.a1sum=s.a1.reduce((x,y)=>x+y,0);s.a1corrSum=s.a1corr.reduce((x,y)=>x+y,0);
+const gw=s.a1gutWrong.reduce((x,y)=>x+y,0);
+s.a2=S.a2.map(x=>x.g<0?0:x.g);s.a2sum=s.a2.reduce((x,y)=>x+y,0);
+const v1=num(S.a3[0].est),v2=num(S.a3[1].est);
+s.a3=[(v1>=14&&v1<=20)?2:(v1<50?1:0),(v2>=35&&v2<=45)?2:((v2>=10&&v2<80)?1:0)];
+s.a3sum=s.a3[0]+s.a3[1];
+s.a4hits=0;A4.forEach((q,i)=>{const lo=num(S.a4[i].lo),hi=num(S.a4[i].hi);if(lo<=q.a&&q.a<=hi&&!isNaN(lo))s.a4hits++;});
+const bp=(idx,max)=>BG[idx].reduce((x,j)=>x+S.b[j],0)/max*100;
+s.bStruct=bp('struct',20);s.bOpen=bp('open',15);s.bQuant=bp('quant',10);s.bMeta=bp('meta',15);s.bLoop=bp('loop',20);
+s.c=S.c.r.map(x=>x<0?0:x);s.csum=s.c.reduce((x,y)=>x+y,0);
+const mean=(...x)=>x.reduce((a,b)=>a+b,0)/x.length;
+const dims=[ (s.a1sum+s.a2sum+s.a3sum)/14*100,
+mean(s.a4hits*10,s.bQuant),
+gw>0?mean(s.a1corrSum/gw*100,s.bMeta):s.bMeta,
+mean(s.bStruct,(s.c[0]+s.c[1]+s.c[2]+s.c[3])/12*100),
+mean(s.bOpen,s.c[4]/3*100),
+mean(s.bLoop,(s.c[5]+s.c[6])/6*100)].map(v=>Math.max(0,Math.min(100,Math.round(v))));
+s.dims=dims;R={date:new Date().toISOString().slice(0,10),v:1,scores:s,dims};}
+/* ---------- report ---------- */
+function lv(v){const L=T[lang].levels;return v<35?L.lo:v<50?L.midl:v<65?L.mid:v<80?L.midh:L.hi;}
+function diagnosis(){const t=T[lang],s=R.scores,d=[];const zh=lang=='zh';
+if(s.a1sum==4&&(s.a2sum+s.a3sum)<=6)d.push(zh?"A1 全对但情境/概率题低：抽象题会做，真实场景照样中招——知识没变成反射。处方：偏见识别日常练习 + 决策日志（模块 D、E）。":"Perfect A1 but weak scenarios: knowledge hasn't become reflex. Rx: daily bias-spotting + decision journal (Modules D, E).");
+if(s.a4hits<=6)d.push(zh?`A4 仅命中 ${s.a4hits}/10：显著过度自信，这是最普遍也最贵的缺陷。首要任务：校准训练（模块 C）——每日估一个数量级，每周做训练馆校准套题。`:`A4 only ${s.a4hits}/10 hits: significant overconfidence — the most common and costly flaw. Top priority: calibration training (Module C).`);
+if(s.bLoop<=40)d.push(zh?"决策闭环 ≤ 40%：想得多、记不下、不复盘，经验无法复利。首要任务：决策日志 + 月度复盘（模块 E），先只做'每天一句话日志'。":"Decision Loop ≤ 40%: thinking doesn't land on paper. Rx: decision journal + monthly review (Module E); start with one sentence a day.");
+if(s.bOpen<=50||s.c[4]<=1)d.push(zh?"开放性偏低或反方考虑不足：确认偏误风险高。处方：魔鬼代言人 + 钢人论证练习（模块 D）。":"Low openness / weak counter-views: high confirmation-bias risk. Rx: devil's advocate + steelman drills (Module D).");
+if(s.c[0]+s.c[1]+s.c[2]<=4)d.push(zh?"C1–C3 低：想得努力但想得混乱——缺结构化工具。处方：每周一次深度思考工作表（模块 B），雷打不动。":"Weak C1–C3: effort without structure. Rx: weekly deep-thinking worksheet (Module B).");
+const low=R.dims.filter(x=>x<50).length,high=R.dims.filter(x=>x>75).length;
+if(low>=4)d.push(zh?"多数维度 < 50%：正常起点，不必焦虑。严格按 12 周计划从第 1 周开始，不要跳级。":"Most dimensions < 50%: a normal start. Follow the 12-week plan from week 1, no skipping.");
+else if(high>=4)d.push(zh?"多数维度 > 75%：工具层已成型，瓶颈在复杂实战。把重心换成真实重大决策的完整分析 + 寻找思考伙伴互相批评（模块 F）。":"Most dimensions > 75%: tools are in place; the bottleneck is complex real-world practice (Module F).");
+if(!d.length)d.push(zh?"未发现单一显著短板：优先打磨最低的 1–2 个维度即可。":"No single glaring weakness: polish your 1–2 lowest dimensions.");
+return d;}
+function prescription(){const zh=lang=='zh',d=R.dims,t=T[lang].dims;
+const order=d.map((v,i)=>[v,i]).sort((a,b)=>a[0]-b[0]);
+const map=[["模块 D：偏见识别日常练习 + 决策日志（03 文件）","Module D: daily bias-spotting + decision journal (docs/03)"],
+["模块 C：校准训练——每日'万物皆估' + 训练馆每周套题（training.html）","Module C: calibration — daily estimation + weekly sets in training.html"],
+["模块 A：元认知三问——决策前'我在想什么/证据是什么/反方怎么说'","Module A: metacognition three-questions before decisions"],
+["模块 B：结构化——每周 45 分钟深度思考工作表（04 文件）","Module B: structure — weekly 45-min deep-thinking worksheet (docs/04)"],
+["模块 D：魔鬼代言人 + 钢人论证（04 文件模板）","Module D: devil's advocate + steelman (docs/04 templates)"],
+["模块 E：决策日志 + 预测记录 + 月度复盘（04 文件模板）","Module E: decision journal + predictions + monthly review (docs/04)"]];
+return [zh?`最弱维度：${t[order[0][1]]}（${order[0][0]}%）→ ${map[order[0][1]][0]}`:`Weakest: ${t[order[0][1]]} (${order[0][0]}%) → ${map[order[0][1]][1]}`,
+zh?`次弱维度：${t[order[1][1]]}（${order[1][0]}%）→ ${map[order[1][1]][0]}`:`Second: ${t[order[1][1]]} (${order[1][0]}%) → ${map[order[1][1]][1]}`,
+zh?"执行规则：只修这 1–2 个维度，坚持 4 周再评估；第 1–2 周只做最小动作（日志一句话 + 每日估一数）。":"Rule: fix only these 1–2 dimensions for 4 weeks; weeks 1–2 do only the minimum actions."];}
+function radar(cv,vals,labels){const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H/2,r=Math.min(W,H)/2-46;
+ctx.clearRect(0,0,W,H);ctx.strokeStyle='#2b3540';ctx.fillStyle='#93a1b0';ctx.font='12px sans-serif';
+for(const g of[0.25,0.5,0.75,1]){ctx.beginPath();for(let i=0;i<=6;i++){const a=Math.PI*2*i/6-Math.PI/2;
+ctx[i?'lineTo':'moveTo'](cx+r*g*Math.cos(a),cy+r*g*Math.sin(a));}ctx.stroke();}
+ctx.beginPath();vals.forEach((v,i)=>{const a=Math.PI*2*i/6-Math.PI/2,rr=r*v/100;
+ctx[i?'lineTo':'moveTo'](cx+rr*Math.cos(a),cy+rr*Math.sin(a));});ctx.closePath();
+ctx.fillStyle='rgba(77,163,255,.25)';ctx.fill();ctx.strokeStyle='#4da3ff';ctx.stroke();
+labels.forEach((lb,i)=>{const a=Math.PI*2*i/6-Math.PI/2;ctx.textAlign=Math.abs(Math.cos(a))<0.3?'center':(Math.cos(a)>0?'left':'right');
+ctx.fillText(`${lb} ${vals[i]}%`,cx+(r+22)*Math.cos(a),cy+(r+22)*Math.sin(a));});}
+function renderReport(){const t=T[lang],a=$('app');if(!R)grade();
+const md=mdReport();
+a.innerHTML=`<h2>${t.score}</h2>
+<canvas id="cv" width="640" height="460" style="max-width:100%"></canvas>
+<table><tr><th></th>${t.dims.map(d=>`<th>${d}</th>`).join('')}</tr>
+<tr><td>%</td>${R.dims.map(v=>`<td class="${v<50?'bad':v>=75?'good':''}">${v}% <span class="small">${lv(v)}</span></td>`).join('')}</tr></table>
+<div id="cmp"></div>
+<h2>${t.diagT}</h2><div class="card">${diagnosis().map(d=>`<p>• ${d}</p>`).join('')}</div>
+<h2>${t.prescT}</h2><div class="card">${prescription().map(p=>`<p>• ${p}</p>`).join('')}
+<p class="small">${lang=='zh'?'训练系统详见 docs/03，模板见 docs/04，练习工具见 training.html。':'See docs/03 for the training system, docs/04 for templates, training.html for drills.'}</p></div>
+<p class="hint">${t.reportTip}</p>
+<div class="row"><button class="btn" onclick="dlJSON()">${t.export}</button>
+<button class="btn ghost" onclick="dlMD()">${t.md}</button>
+<button class="btn ghost" onclick="$('fi').click()">${t.import}</button>
+<input type="file" id="fi" accept=".json" style="display:none" onchange="cmpJSON(this)"></div>`;
+radar($('cv'),R.dims,t.dims);}
+/* ---------- export / compare ---------- */
+function dlJSON(){const b=new Blob([JSON.stringify(R,null,1)],{type:'application/json'});
+const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.json`;a.click();}
+function mdReport(){const t=T[lang],s=R.scores;
+return `# ${t.title} — Report\n\nDate: ${R.date}\n\n## ${t.score}\n\n| | ${t.dims.join(' | ')} |\n|---|${t.dims.map(()=>'---').join('|')}|\n| % | ${R.dims.join('% | ')}% |\n\n`+
+`- A1: ${s.a1sum}/4 (gut-corrected: ${s.a1corrSum})\n- A2: ${s.a2sum}/6\n- A3: ${s.a3sum}/4\n- A4 hits: ${s.a4hits}/10\n- C: ${s.csum}/21\n\n## ${t.diagT}\n\n${diagnosis().map(d=>'- '+d).join('\n')}\n\n## ${t.prescT}\n\n${prescription().map(p=>'- '+p).join('\n')}\n`;}
+function dlMD(){const b=new Blob([mdReport()],{type:'text/markdown'});
+const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.md`;a.click();}
+function cmpJSON(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();
+rd.onload=()=>{try{const o=JSON.parse(rd.result);const t=T[lang];
+$('cmp').innerHTML=`<h2>${t.delta} (${o.date})</h2><table><tr><th></th>${t.dims.map(d=>`<th>${d}</th>`).join('')}</tr>
+<tr><td>${t.delta}</td>${R.dims.map((v,i)=>{const d=v-(o.dims[i]||0);return `<td class="${d>0?'good':d<0?'bad':''}">${d>0?'+':''}${d}</td>`;}).join('')}</tr></table>`;
+}catch(e){alert('Invalid JSON');}};rd.readAsText(f);}
+/* ---------- nav & init ---------- */
+document.addEventListener('input',e=>{const k=e.target.dataset.k;if(k)setPath(S,k,e.target.value);});
+function go(d){if(d>0&&si==6)grade();
+if(d>0&&si==7){if(confirm(lang=='zh'?'重新开始将清空当前作答。继续？':'Restart will clear current answers. Continue?')){location.reload();}return;}
+si=Math.max(0,Math.min(7,si+d));window.scrollTo(0,0);render();}
+$('lzh').className=lang=='zh'?'on':'';$('len').className=lang=='en'?'on':'';render();
+</script>
+</body>
+</html>

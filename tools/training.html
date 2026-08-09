@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校准与概率训练馆</title>
+<style>
+  :root{ --bg:#f4f6f9; --card:#fff; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+         --blue:#2563eb; --blue-bg:#eff6ff; --green:#059669; --green-bg:#ecfdf5;
+         --red:#dc2626; --red-bg:#fef2f2; --amber:#d97706; --amber-bg:#fffbeb; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+       background:var(--bg); color:var(--ink); line-height:1.65; padding-bottom:80px;}
+  .wrap{max-width:860px; margin:0 auto; padding:24px 16px;}
+  header{text-align:center; padding:28px 0 8px;}
+  header h1{font-size:26px;}
+  header p{color:var(--sub); font-size:14px; margin-top:6px;}
+  nav{display:flex; gap:8px; justify-content:center; margin:22px 0; flex-wrap:wrap;}
+  nav button{border:1px solid var(--line); background:var(--card); padding:9px 18px; border-radius:999px;
+             font-size:14px; cursor:pointer; color:var(--sub); transition:.15s;}
+  nav button.active{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:16px;}
+  h2{font-size:18px; margin-bottom:10px;}
+  h3{font-size:15px; margin:14px 0 8px;}
+  .sub{color:var(--sub); font-size:13px;}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:12px 0;}
+  select,input[type=number],input[type=text]{border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+        font-size:14px; background:#fff; color:var(--ink);}
+  input[type=number]{width:120px;}
+  .btn{border:none; background:var(--blue); color:#fff; padding:9px 20px; border-radius:8px; font-size:14px;
+       cursor:pointer; transition:.15s;}
+  .btn:hover{filter:brightness(1.1);}
+  .btn.ghost{background:#fff; color:var(--blue); border:1px solid var(--blue);}
+  .btn.small{padding:5px 12px; font-size:13px;}
+  .badge{display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600;}
+  .b-green{background:var(--green-bg); color:var(--green);}
+  .b-red{background:var(--red-bg); color:var(--red);}
+  .b-blue{background:var(--blue-bg); color:var(--blue);}
+  .b-amber{background:var(--amber-bg); color:var(--amber);}
+  .qbox{font-size:17px; font-weight:600; margin:8px 0 4px;}
+  .feedback{border-radius:10px; padding:14px 16px; margin-top:14px; font-size:14px;}
+  .f-hit{background:var(--green-bg); border:1px solid #a7f3d0;}
+  .f-miss{background:var(--red-bg); border:1px solid #fecaca;}
+  .progress{height:6px; background:var(--line); border-radius:3px; margin:10px 0 18px; overflow:hidden;}
+  .progress i{display:block; height:100%; background:var(--blue); transition:.3s;}
+  table{width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;}
+  th,td{border-bottom:1px solid var(--line); padding:7px 8px; text-align:left;}
+  th{color:var(--sub); font-weight:500;}
+  .steps .step{background:var(--blue-bg); border-radius:8px; padding:10px 14px; margin:8px 0; font-size:14px;}
+  details{border:1px solid var(--line); border-radius:10px; margin-bottom:10px; background:#fff;}
+  summary{padding:12px 16px; cursor:pointer; font-weight:600; font-size:14px;}
+  details .body{padding:0 16px 14px;}
+  .anchor{display:flex; gap:8px; padding:7px 0; border-bottom:1px dashed var(--line); font-size:14px; flex-wrap:wrap;}
+  .anchor b{min-width:170px;}
+  .anchor .mem{color:var(--sub); font-size:13px; width:100%;}
+  .big-score{font-size:44px; font-weight:700; text-align:center; margin:8px 0;}
+  .tipbox{background:var(--amber-bg); border:1px solid #fde68a; border-radius:10px; padding:12px 16px; font-size:13px; margin:10px 0;}
+  .hidden{display:none;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🎯 校准与概率训练馆</h1>
+  <p>校准度 · 贝叶斯直觉 · 数字概念 —— 你的第一优先训练项</p>
+</header>
+<nav>
+  <button data-tab="calib" class="active">校准训练</button>
+  <button data-tab="prob">概率训练</button>
+  <button data-tab="anchors">数字概念库</button>
+  <button data-tab="records">我的记录</button>
+</nav>
+
+<!-- ============ 校准训练 ============ -->
+<section id="tab-calib">
+  <div class="card" id="calib-setup">
+    <h2>区间估计校准练习</h2>
+    <p class="sub">规则：每题给出一个你认为<b>恰好有选定把握</b>包含真实答案的区间。不要太窄（那是过度自信），也不要宽到毫无信息量。做完 10 题后系统告诉你真实命中率。</p>
+    <div class="row">
+      <label>题组：<select id="setSel"></select></label>
+      <label>把握度：<select id="confSel">
+        <option value="90" selected>90%</option><option value="70">70%</option><option value="50">50%</option>
+      </select></label>
+      <button class="btn" onclick="startCalib()">开始练习</button>
+    </div>
+    <div class="tipbox">💡 研究显示：多数人在 90% 把握下只能命中约一半。矫正规则：给完直觉区间后，<b>两端各再放宽 30%</b>。</div>
+  </div>
+
+  <div class="card hidden" id="calib-run">
+    <div class="sub" id="calib-progress-label"></div>
+    <div class="progress"><i id="calib-bar" style="width:0%"></i></div>
+    <div class="qbox" id="calib-q"></div>
+    <div class="sub" id="calib-unit"></div>
+    <div class="row">
+      <input type="number" id="calib-low" placeholder="下限">
+      <span>—</span>
+      <input type="number" id="calib-high" placeholder="上限">
+      <button class="btn" onclick="submitCalib()">提交区间</button>
+    </div>
+    <div id="calib-feedback"></div>
+  </div>
+
+  <div class="card hidden" id="calib-result">
+    <h2>本次结果</h2>
+    <div class="big-score" id="calib-score"></div>
+    <p class="sub" style="text-align:center" id="calib-verdict"></p>
+    <div id="calib-review"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" onclick="backToSetup()">再来一组</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📌 每日万物皆估（随手记一条）</h2>
+    <p class="sub">估任何你关心的量：项目工期、视频播放量、这顿饭多少钱……事后回填实际值，系统自动算命中。这是校准训练的日常主食。</p>
+    <div class="grid2">
+      <input type="text" id="est-topic" placeholder="估什么？例如：新视频首周播放量">
+      <select id="est-conf"><option value="90">90% 把握</option><option value="70">70% 把握</option><option value="50">50% 把握</option></select>
+      <input type="number" id="est-low" placeholder="下限">
+      <input type="number" id="est-high" placeholder="上限">
+    </div>
+    <div class="row"><button class="btn small" onclick="addEst()">记录估算</button></div>
+    <div id="est-list"></div>
+  </div>
+</section>
+
+<!-- ============ 概率训练 ============ -->
+<section id="tab-prob" class="hidden">
+  <div class="card">
+    <h2>贝叶斯直觉训练</h2>
+    <p><b>万能四步法</b>（所有"证据更新概率"题通用）：</p>
+    <ol style="padding-left:22px; font-size:14px; margin:8px 0;">
+      <li><b>摊开人群</b>：想象 1000（或 10 万）个样本，先按基率分成两堆；</li>
+      <li><b>数对的</b>：目标堆里，有多少会产生这条证据；</li>
+      <li><b>数全部</b>：所有堆里，有多少会产生这条证据（含误报）；</li>
+      <li><b>相除</b>：目标数 ÷ 证据总数。</li>
+    </ol>
+    <div class="tipbox">⚡ 速算捷径（结果小于 30% 时很准）：<b>后验概率 ≈ 基率 × 似然比</b>，其中似然比 = 命中率 ÷ 误报率。例：患病率 1% × (99%÷5%≈20) ≈ 20%，与精确值 17% 很接近——比拍脑袋的 94% 强一个量级。</div>
+  </div>
+  <div id="prob-list"></div>
+</section>
+
+<!-- ============ 数字概念库 ============ -->
+<section id="tab-anchors" class="hidden">
+  <div class="card">
+    <h2>数字概念库（你的估算坐标系）</h2>
+    <p class="sub">每周精记 5 个：读记忆挂钩 → 合上复述 → 在周日校准套题中检验。估新量时先找最近的锚点，再按比例外推。</p>
+  </div>
+  <div id="anchor-list"></div>
+</section>
+
+<!-- ============ 我的记录 ============ -->
+<section id="tab-records" class="hidden">
+  <div class="card">
+    <h2>校准套题历史</h2>
+    <p class="sub">目标曲线：90% 区间的命中率 4/10 → 6/10（第 4 周）→ 8/10（第 12 周）。</p>
+    <table><thead><tr><th>日期</th><th>题组</th><th>把握度</th><th>命中</th></tr></thead>
+    <tbody id="attempts-body"></tbody></table>
+  </div>
+  <div class="card">
+    <h2>操作</h2>
+    <button class="btn ghost small" onclick="clearAll()">清空本机所有训练记录</button>
+    <p class="sub" style="margin-top:8px">记录仅保存在本机浏览器（localStorage），不上传。</p>
+  </div>
+</section>
+</div>
+
+<script>
+/* ================= 数据 ================= */
+const SETS = {
+  A: { name:"A 组 · 综合基础（与评估同源，有记忆影响，建议后做）", items:[
+    {q:"长江全长", u:"公里", a:6300}, {q:"珠穆朗玛峰高度", u:"米", a:8849},
+    {q:"地球到月球的平均距离", u:"万公里", a:38.4}, {q:"达尔文《物种起源》出版年份", u:"年", a:1859},
+    {q:"人类首次登月年份", u:"年", a:1969}, {q:"成年人骨骼数量", u:"块", a:206},
+    {q:"地球到太阳的平均距离", u:"万公里", a:14960}, {q:"非洲象怀孕周期", u:"月", a:22},
+    {q:"人类蛋白质编码基因数量", u:"万个", a:2}, {q:"中国历代长城总长度", u:"万公里", a:2.1}]},
+  B: { name:"B 组 · 天地与人", items:[
+    {q:"黄河全长", u:"公里", a:5464}, {q:"马里亚纳海沟最深处", u:"米", a:11000},
+    {q:"地球赤道周长", u:"公里", a:40075}, {q:"联合国会员国数量", u:"个", a:193},
+    {q:"阳光从太阳到达地球所需时间", u:"分钟", a:8.3}, {q:"人脑神经元数量", u:"亿个", a:860},
+    {q:"空气中声速（15°C）", u:"米/秒", a:340}, {q:"人类孕期总长", u:"天", a:280},
+    {q:"宇宙年龄", u:"亿年", a:138}, {q:"地球表面积", u:"亿平方公里", a:5.1}]},
+  C: { name:"C 组 · 历史与尺度", items:[
+    {q:"尼罗河长度", u:"公里", a:6650}, {q:"贝加尔湖最大深度", u:"米", a:1642},
+    {q:"胡夫金字塔原高", u:"米", a:147}, {q:"首届现代奥运会年份", u:"年", a:1896},
+    {q:"古腾堡金属活字印刷术出现年份", u:"年", a:1440}, {q:"恐龙灭绝距今", u:"万年", a:6600},
+    {q:"地球年龄", u:"亿年", a:45.4}, {q:"成年人全身血量", u:"升", a:5},
+    {q:"一年的总秒数", u:"万秒", a:3154}, {q:"京杭大运河长度", u:"公里", a:1794}]},
+  D: { name:"D 组 · 世界地理", items:[
+    {q:"亚马逊河长度", u:"公里", a:6400}, {q:"撒哈拉沙漠面积", u:"万平方公里", a:906},
+    {q:"澳大利亚面积", u:"万平方公里", a:769}, {q:"格陵兰岛面积", u:"万平方公里", a:217},
+    {q:"里海面积", u:"万平方公里", a:37}, {q:"日本国土面积", u:"万平方公里", a:38},
+    {q:"英国国土面积", u:"万平方公里", a:24}, {q:"马达加斯加面积", u:"万平方公里", a:59},
+    {q:"坦噶尼喀湖最大深度", u:"米", a:1470}, {q:"世界海洋占地球表面比例", u:"%", a:71}]},
+  E: { name:"E 组 · 宇宙尺度", items:[
+    {q:"月球直径", u:"公里", a:3475}, {q:"地球直径", u:"公里", a:12742},
+    {q:"太阳直径", u:"万公里", a:139}, {q:"水星公转周期", u:"天", a:88},
+    {q:"金星公转周期", u:"天", a:225}, {q:"木星公转周期", u:"年", a:12},
+    {q:"冥王星公转周期", u:"年", a:248}, {q:"比邻星距地球", u:"光年", a:4.2},
+    {q:"太阳系年龄", u:"亿年", a:46}, {q:"太阳表面温度", u:"摄氏度", a:5500}]},
+  F: { name:"F 组 · 人体", items:[
+    {q:"人类染色体对数", u:"对", a:23}, {q:"大脑重量", u:"公斤", a:1.4},
+    {q:"心脏重量", u:"克", a:300}, {q:"小肠总长度", u:"米", a:6},
+    {q:"全身血管总长度", u:"万公里", a:10}, {q:"皮肤总面积", u:"平方米", a:1.7},
+    {q:"人体含水量占比", u:"%", a:60}, {q:"成年人牙齿最大数量", u:"颗", a:32},
+    {q:"头皮头发数量", u:"万根", a:10}, {q:"头发一年大约长长", u:"厘米", a:12}]},
+  G: { name:"G 组 · 人口与社会", items:[
+    {q:"世界人口", u:"亿", a:82}, {q:"中国人口", u:"亿", a:14.1},
+    {q:"印度人口", u:"亿", a:14.5}, {q:"美国人口", u:"亿", a:3.4},
+    {q:"印度尼西亚人口", u:"亿", a:2.8}, {q:"尼日利亚人口", u:"亿", a:2.3},
+    {q:"全球互联网用户数", u:"亿", a:55}, {q:"世界汽车保有量", u:"亿辆", a:14},
+    {q:"世界平均预期寿命", u:"岁", a:73}, {q:"中国平均预期寿命", u:"岁", a:78}]},
+  H: { name:"H 组 · 速度与日常", items:[
+    {q:"全程马拉松距离", u:"公里", a:42.2}, {q:"男子百米世界纪录", u:"秒", a:9.58},
+    {q:"男子 100 米自由泳世界纪录", u:"秒", a:46.4}, {q:"光绕地球赤道一圈所需时间", u:"秒", a:0.13},
+    {q:"一天的总秒数", u:"秒", a:86400}, {q:"一个农历月的天数", u:"天", a:29.5},
+    {q:"一万步大约的距离", u:"公里", a:7}, {q:"民航客机巡航速度", u:"公里/小时", a:900},
+    {q:"哈利法塔（迪拜塔）高度", u:"米", a:828}, {q:"三峡大坝坝高", u:"米", a:185}]}
+};
+
+const PROB = [
+  { t:"P1 · 医学检测（多数人的第一反应错得离谱）",
+    text:"某病患病率 1%。检测对患病者呈阳性的概率 99%；对健康者呈阳性（假阳性）的概率 5%。某人检测阳性，他真患病的概率是多少？",
+    lo:14, hi:20,
+    steps:["<b>摊开人群</b>：想象 1000 人 —— 按 1% 基率，约 10 人患病，990 人健康。",
+      "<b>数对的</b>：10 个病人 × 99% ≈ <b>10 个真阳性</b>。",
+      "<b>数全部</b>：990 个健康人 × 5% 假阳性 ≈ <b>50 个假阳性</b>。阳性总共 ≈ 60 个。",
+      "<b>相除</b>：10 ÷ 60 ≈ <b>17%</b>。",
+      "🔑 关键直觉：假阳性（50）比真阳性（10）多得多 —— <b>病越罕见，阳性里假阳性占比越高</b>。"]},
+  { t:"P2 · 出租车（常见错误：只算了分子）",
+    text:"城市出租车 85% 绿色、15% 蓝色。目击者说肇事车是蓝色，其辨色准确率 80%。肇事车真是蓝色的概率？",
+    lo:37, hi:45,
+    steps:["<b>摊开</b>：1000 辆车 —— 150 蓝，850 绿。",
+      "<b>数对的</b>：目击者正确指认蓝车 150 × 80% = <b>120 次</b>。（很多人只算到这一步：0.15×0.8=0.12）",
+      "<b>数全部</b>：绿车被错认成蓝 850 × 20% = <b>170 次</b>。目击者喊“蓝”共 120+170 = 290 次。",
+      "<b>相除</b>：120 ÷ 290 ≈ <b>41%</b>。",
+      "🔑 直接乘出的 12% 是“车是蓝 且 被说成蓝”的联合概率；题目要的是“已知被说成蓝，车是蓝”的<b>条件概率</b>——差的就是除以证据总数这一下。"]},
+  { t:"P3 · 罕见病加强版",
+    text:"某病患病率 0.1%（千分之一）。检测灵敏度 99%，假阳性率 1%。某人阳性，真患病概率？",
+    lo:7, hi:12,
+    steps:["<b>摊开</b>：100,000 人 —— 100 人患病，99,900 人健康。",
+      "<b>数对的</b>：100 × 99% ≈ 99 个真阳性。",
+      "<b>数全部</b>：99,900 × 1% ≈ 999 个假阳性，阳性共 ≈ 1098。",
+      "<b>相除</b>：99 ÷ 1098 ≈ <b>9%</b>。",
+      "🔑 基率再降 10 倍，阳性为真的概率也掉到约 1/10。<b>速算验证</b>：0.1% × (99÷1) ≈ 10%。"]},
+  { t:"P4 · 工厂质检（换个场景检验迁移）",
+    text:"产品不良率 0.5%。检测机抓出不良品的概率 95%，把好品误判为不良的概率 2%。一件产品被检测机标红，它真不良的概率？",
+    lo:15, hi:23,
+    steps:["<b>摊开</b>：10,000 件 —— 50 件不良，9,950 件良品。",
+      "<b>数对的</b>：50 × 95% ≈ 47.5 件被正确标红。",
+      "<b>数全部</b>：9,950 × 2% ≈ 199 件良品被误标，标红共 ≈ 246.5 件。",
+      "<b>相除</b>：47.5 ÷ 246.5 ≈ <b>19%</b>。",
+      "🔑 速算验证：0.5% × (95÷2≈48) ≈ 24%（略高估，量级正确）。能不看提示独立做出这题，贝叶斯直觉就算入门了。"]}
+];
+
+const ANCHORS = {
+  "📏 数量级阶梯（最推荐先背）": [
+    ["100 万秒 ≈ 11.6 天","万与亿差 1000 倍，直觉上极易混"],
+    ["10 亿秒 ≈ 31.7 年","14 亿人的‘亿’，是 30 多年的尺度"],
+    ["1 万亿秒 ≈ 3.17 万年","比整个人类文明史还长"],
+    ["1 万人 ≈ 一个爆满的体育场",""],
+    ["1 万步 ≈ 7 公里","日常最好用的长度换算"],
+    ["1 万小时 ≈ 5 年全职工作","‘一万小时定律’的真实尺度"],
+    ["100 元新钞约 1 克","100 万元 ≈ 11.5 公斤，一箱矿泉水的重量"],
+    ["头发直径 ≈ 80 微米","1 毫米里能排 12 根头发"],
+    ["地球史压缩成一天","人类出现在最后几秒，农业文明在最后 0.1 秒"]],
+  "🌌 宇宙尺度": [
+    ["月球直径 3475 公里","约为地球的 1/4"],
+    ["地球直径 12742 公里","赤道周长约 4 万公里（高铁不停歇跑 115 小时）"],
+    ["太阳直径 139.2 万公里","里面能塞下 130 万个地球"],
+    ["木星直径 14 万公里","能塞 1300 个地球"],
+    ["地月距离 38.4 万公里","≈ 30 个地球排成一串"],
+    ["日地距离 1.5 亿公里","光走 8.3 分钟，即 1 个天文单位"],
+    ["比邻星 4.2 光年","旅行者号的速度要飞约 7 万年"],
+    ["银河系直径 10 万光年","太阳系距银心 2.6 万光年"],
+    ["可观测宇宙直径 930 亿光年",""],
+    ["宇宙 138 亿年 · 地球 45.4 亿年 · 生命 38 亿年","一口气记三个"],
+    ["光年 ≈ 9.46 万亿公里",""]],
+  "🗺️ 地理与世界": [
+    ["尼罗河 6650 公里","世界最长河"],
+    ["长江 6300 公里 · 黄河 5464 公里","中国第一、第二长河"],
+    ["珠峰 8849 米 / 马里亚纳海沟 11000 米","珠峰塞进海沟还差 2 公里水"],
+    ["撤哈拉沙漠 906 万平方公里","几乎和美国国土一样大"],
+    ["澳大利亚 769 万平方公里","既是国家也是大陆"],
+    ["格陵兰岛 217 万平方公里","世界最大岛，80% 被冰盖覆盖"],
+    ["里海 37 万平方公里","世界最大‘湖’，比德国还大"],
+    ["海洋占地球表面 71%","陆地只有 29%"],
+    ["历代长城 2.1 万公里","超过赤道周长的一半"],
+    ["京杭大运河 1794 公里","≈ 北京到广州的直线距离"],
+    ["中国陆地面积约 960 万平方公里","俄罗斯 1709 万（最大）、梵蒂冈 0.44（最小）"]],
+  "👥 世界人口": [
+    ["世界人口约 82 亿",""],
+    ["印度约 14.5 亿 · 中国约 14.1 亿","印度已超过中国"],
+    ["美国 3.4 亿 · 印尼 2.8 亿 · 尼日利亚 2.3 亿","第 3、4、6 人口大国"],
+    ["日本 1.25 亿 · 俄罗斯 1.44 亿 · 德国 8400 万",""],
+    ["全球互联网用户约 55 亿","约 2/3 的人类已上网"],
+    ["世界平均预期寿命约 73 岁","中国约 78 岁，1900 年全球仅约 31 岁"],
+    ["世界每年出生约 1.3 亿人 · 死亡约 6000 万",""],
+    ["联合国会员国 193 个",""]],
+  "🧬 人体": [
+    ["骨骼 206 块","婴儿约 300 块，长大后融合"],
+    ["全身血量约 5 升","≈ 大瓶可乐的 2.5 倍"],
+    ["血管总长约 10 万公里","能绕地球两圈半"],
+    ["心脏约 300 克 · 每天跳约 10 万次",""],
+    ["大脑约 1.4 公斤","占体重 2%，却耗掉 20% 的能量"],
+    ["神经元约 860 亿","和银河系恒星数量同一量级"],
+    ["皮肤约 1.7 平方米 · 小肠约 6 米",""],
+    ["人体含水量约 60%",""],
+    ["基因约 2 万个","比预期少得多——水稻都有 3 万+"],
+    ["头发约 10 万根 · 每月长约 1 厘米",""],
+    ["每天眨眼约 1.5 万次 · 呼吸约 2 万次",""],
+    ["染色体 23 对 · 孕期 280 天 · 红细胞寿命 120 天",""]],
+  "🦋 生物": [
+    ["蓝鲸长约 30 米 · 重约 180 吨","地球史上最大的动物，心脏有小汽车大"],
+    ["猎豹时速 110 公里","陆地最快；鸵鸟 70 公里/时是两足最快"],
+    ["蜗牛时速约 0.05 公里","比步行慢 100 倍"],
+    ["蚊子每年致死超 70 万人","对人类最致命的动物"],
+    ["1 公斤蜂蜜 ≈ 访问 200 万朵花",""],
+    ["最高树（红杉）约 115 米","接近 40 层楼"]],
+  "🏗️ 工程与地标": [
+    ["胡夫金字塔约 147 米","建于约 4500 年前"],
+    ["埃菲尔铁塔 330 米 · 哈利法塔 828 米",""],
+    ["三峡大坝坝高 185 米",""],
+    ["港珠澳大桥 55 公里","世界最长跨海大桥"],
+    ["京沪高铁 1318 公里","最快约 4.5 小时"],
+    ["青藏铁路最高点 5068 米","世界海拔最高的铁路"]],
+  "🕰️ 文明与科技时间线": [
+    ["农业 ≈ 1 万年前 · 文字 ≈ 5500 年前","人类 99% 的历史没有文字"],
+    ["金字塔 ≈ 4500 年前 · 兵马俑 ≈ 2200 年前",""],
+    ["造纸（蔡伦）约 1900 年前 · 古腾堡印刷 1440 年",""],
+    ["蒸汽机（瓦特改良）1769 · 首条铁路 1825","工业革命的起点距今约 250 年"],
+    ["电灯 1879 · 飞机 1903 · 青霉素 1928",""],
+    ["首台计算机 ENIAC 1946 · 登月 1969 · 互联网前身 ARPANET 1969",""],
+    ["万维网 1989 · 智能手机 2007 · 大模型爆发 2022","万维网比很多人想象的年轻"]],
+  "🏙️ 经济与生活": [
+    ["全球 GDP 约 105 万亿美元","中国约 134 万亿元，美国约 29 万亿美元"],
+    ["全球每年卖车约 9000 万辆","保有量约 14 亿辆"],
+    ["全球智能手机每年出货约 12 亿部",""],
+    ["世界每天消耗石油约 1 亿桶",""],
+    ["一杯咖啡 ≈ 80–100mg 咖啡因",""],
+    ["一屏手机刷过 ≈ 3–5 秒","做内容时的注意力标尺"]],
+  "🔢 数量直觉与速度": [
+    ["一年 ≈ 3154 万秒 · 一天 86400 秒","速记：π×1000 万 ≈ 3140 万"],
+    ["声速 340 米/秒","看到闪电 3 秒后听到雷 = 约 1 公里外"],
+    ["光速 30 万公里/秒","1 秒绕地球 7 圈半；绕一圈只要 0.13 秒"],
+    ["步行 5 · 高铁 350 · 民航 900 公里/时","速度三级参照系"],
+    ["马拉松 42.2 公里 · 百米纪录 9.58 秒",""],
+    ["72 法则","翻倍年数 ≈ 72 ÷ 年增长率（%）"],
+    ["费米估算基准","中国 14 亿人 ≈ 每人一次 = 14 亿次"]]
+};
+
+/* ================= 通用 ================= */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k,d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch(e){ return d; } },
+  set(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+};
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    ["calib","prob","anchors","records"].forEach(t=>$("tab-"+t).classList.toggle("hidden", t!==b.dataset.tab));
+  };
+});
+
+/* ================= 校准练习 ================= */
+let calib = { items:[], idx:0, conf:90, answers:[], setKey:"B" };
+(function(){ const s=$("setSel"); for(const k in SETS){ const o=document.createElement("option"); o.value=k; o.textContent=SETS[k].name; s.appendChild(o);} s.value="B"; })();
+
+function startCalib(){
+  calib.setKey = $("setSel").value; calib.conf = +$("confSel").value;
+  calib.items = [...SETS[calib.setKey].items].sort(()=>Math.random()-0.5);
+  calib.idx = 0; calib.answers = [];
+  $("calib-setup").classList.add("hidden"); $("calib-result").classList.add("hidden");
+  $("calib-run").classList.remove("hidden");
+  renderCalibQ();
+}
+function renderCalibQ(){
+  const it = calib.items[calib.idx], n = calib.items.length;
+  $("calib-progress-label").textContent = `第 ${calib.idx+1} / ${n} 题 · 把握度 ${calib.conf}%`;
+  $("calib-bar").style.width = (calib.idx/n*100)+"%";
+  $("calib-q").textContent = it.q;
+  $("calib-unit").textContent = "单位：" + it.u;
+  $("calib-low").value = ""; $("calib-high").value = ""; $("calib-feedback").innerHTML = "";
+  $("calib-low").focus();
+}
+function submitCalib(){
+  const lo = parseFloat($("calib-low").value), hi = parseFloat($("calib-high").value);
+  if(isNaN(lo)||isNaN(hi)||lo>hi){ alert("请填写合法区间（下限 ≤ 上限）"); return; }
+  const it = calib.items[calib.idx];
+  const hit = it.a>=lo && it.a<=hi;
+  calib.answers.push({q:it.q, u:it.u, lo, hi, a:it.a, hit});
+  $("calib-feedback").innerHTML =
+    `<div class="feedback ${hit?'f-hit':'f-miss'}">` +
+    (hit?`✅ <b>命中</b> · `:`❌ <b>未命中</b> · `) +
+    `真实值：<b>${fmt(it.a)} ${it.u}</b>（你的区间 ${fmt(lo)}–${fmt(hi)}）` +
+    `<div class="row" style="margin-bottom:0"><button class="btn small" onclick="nextCalib()">${calib.idx+1<calib.items.length?'下一题 →':'查看结果'}</button></div></div>`;
+}
+function nextCalib(){
+  calib.idx++;
+  if(calib.idx < calib.items.length){ renderCalibQ(); return; }
+  const n = calib.answers.length, hits = calib.answers.filter(x=>x.hit).length;
+  store.set("calibAttempts", [...store.get("calibAttempts",[]),
+    {d:new Date().toLocaleDateString(), set:calib.setKey, conf:calib.conf, hit:hits, n}]);
+  $("calib-run").classList.add("hidden"); $("calib-result").classList.remove("hidden");
+  $("calib-score").textContent = `${hits} / ${n}`;
+  const target = calib.conf/100*n;
+  let verdict;
+  if(hits >= target) verdict = hits===n ? "全中。检查一下区间是否宽得失去信息量？" : "校准良好，自信与准确率匹配。";
+  else if(hits >= target-2) verdict = "轻度过度自信：你的区间比你的把握度承诺的更窄。";
+  else verdict = "显著过度自信。记住矫正规则：直觉区间两端各放宽 30%。";
+  $("calib-verdict").textContent = `你声称 ${calib.conf}% 把握，期望命中约 ${target.toFixed(0)} 题。` + verdict;
+  $("calib-review").innerHTML = "<table><tr><th>题</th><th>你的区间</th><th>真实值</th><th></th></tr>" +
+    calib.answers.map(x=>`<tr><td>${x.q}</td><td>${fmt(x.lo)}–${fmt(x.hi)}</td><td>${fmt(x.a)} ${x.u}</td><td>${x.hit?'✅':'❌'}</td></tr>`).join("") + "</table>";
+}
+function backToSetup(){ $("calib-result").classList.add("hidden"); $("calib-setup").classList.remove("hidden"); }
+function fmt(x){ return (+x).toLocaleString(); }
+
+/* ================= 每日万物皆估 ================= */
+function addEst(){
+  const topic = $("est-topic").value.trim();
+  const lo = parseFloat($("est-low").value), hi = parseFloat($("est-high").value);
+  if(!topic || isNaN(lo) || isNaN(hi) || lo>hi){ alert("请填写完整的题目和合法区间"); return; }
+  const list = store.get("dailyEst",[]);
+  list.unshift({topic, conf:+$("est-conf").value, lo, hi, actual:null, hit:null, d:new Date().toLocaleDateString()});
+  store.set("dailyEst",list);
+  ["est-topic","est-low","est-high"].forEach(id=>$(id).value="");
+  renderEst();
+}
+function fillActual(i){
+  const v = prompt("实际结果是多少？"); if(v===null) return;
+  const x = parseFloat(v); if(isNaN(x)){ alert("请输入数字"); return; }
+  const list = store.get("dailyEst",[]);
+  list[i].actual = x; list[i].hit = x>=list[i].lo && x<=list[i].hi;
+  store.set("dailyEst",list); renderEst();
+}
+function delEst(i){ const l=store.get("dailyEst",[]); l.splice(i,1); store.set("dailyEst",l); renderEst(); }
+function renderEst(){
+  const list = store.get("dailyEst",[]);
+  const judged = list.filter(x=>x.hit!==null);
+  const hits = judged.filter(x=>x.hit).length;
+  let html = judged.length ? `<p class="sub" style="margin:8px 0">已判定 ${judged.length} 条，命中 ${hits} 条（${Math.round(hits/judged.length*100)}%）</p>` : "";
+  html += list.map((x,i)=>`<div class="feedback" style="margin-top:8px; background:#f9fafb; border:1px solid var(--line)">
+    <b>${x.topic}</b> <span class="badge b-blue">${x.conf}%</span> <span class="sub">区间 ${fmt(x.lo)}–${fmt(x.hi)} · ${x.d}</span><br>
+    ${x.hit===null
+      ? `<button class="btn small ghost" onclick="fillActual(${i})">回填实际值</button>`
+      : (x.hit?`<span class="badge b-green">命中</span>`:`<span class="badge b-red">未命中</span>`)+` 实际：${fmt(x.actual)}`}
+    <button class="btn small ghost" style="float:right" onclick="delEst(${i})">删除</button></div>`).join("");
+  $("est-list").innerHTML = html || `<p class="sub">还没有记录。从一条小估算开始：今天午饭多少钱？</p>`;
+}
+
+/* ================= 概率训练 ================= */
+function renderProb(){
+  $("prob-list").innerHTML = PROB.map((p,i)=>`<div class="card">
+    <h3>${p.t}</h3>
+    <p style="font-size:14px">${p.text}</p>
+    <div class="row">
+      <input type="number" id="pa-${i}" placeholder="你的答案"> <span class="sub">%</span>
+      <button class="btn small" onclick="checkProb(${i})">提交</button>
+      <button class="btn small ghost" onclick="stepProb(${i})">看推导（下一步）</button>
+    </div>
+    <div id="pf-${i}"></div>
+    <div class="steps" id="ps-${i}"></div>
+  </div>`).join("");
+}
+function checkProb(i){
+  const v = parseFloat($("pa-"+i).value), p = PROB[i];
+  if(isNaN(v)){ alert("请输入百分数"); return; }
+  const ok = v>=p.lo && v<=p.hi;
+  $("pf-"+i).innerHTML = `<div class="feedback ${ok?'f-hit':'f-miss'}">${ok?'✅ 正确！':'❌ 再想想（或点“看推导”）'} · 正确答案约 <b>${Math.round((p.lo+p.hi)/2)}%</b>（接受区间 ${p.lo}–${p.hi}%）</div>`;
+}
+function stepProb(i){
+  const p = PROB[i], box = $("ps-"+i);
+  const shown = box.children.length;
+  if(shown < p.steps.length){
+    const d = document.createElement("div"); d.className = "step"; d.innerHTML = p.steps[shown];
+    box.appendChild(d);
+  }
+}
+
+/* ================= 锚点库 ================= */
+function renderAnchors(){
+  $("anchor-list").innerHTML = Object.keys(ANCHORS).map(g=>`<details>
+    <summary>${g}（${ANCHORS[g].length}）</summary><div class="body">
+    ${ANCHORS[g].map(a=>`<div class="anchor"><b>${a[0]}</b><span class="mem">${a[1]||""}</span></div>`).join("")}
+    </div></details>`).join("");
+}
+
+/* ================= 记录 ================= */
+function renderAttempts(){
+  const list = store.get("calibAttempts",[]);
+  $("attempts-body").innerHTML = list.length
+    ? list.slice().reverse().map(a=>`<tr><td>${a.d}</td><td>${a.set} 组</td><td>${a.conf}%</td><td>${a.hit}/${a.n}</td></tr>`).join("")
+    : `<tr><td colspan="4" class="sub">还没有记录</td></tr>`;
+}
+function clearAll(){
+  if(!confirm("确定清空所有本机训练记录？")) return;
+  localStorage.removeItem("calibAttempts"); localStorage.removeItem("dailyEst");
+  renderAttempts(); renderEst();
+}
+
+/* ================= 初始化 ================= */
+renderProb(); renderAnchors(); renderEst(); renderAttempts();
+</script>
+</body>
+</html>
