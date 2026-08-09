@@ -69,7 +69,7 @@ dimHow:["A1 认知反射题 + A2 情境题 + A3 概率题","A4 区间估计命�
 whyTitle:"评估方式与合理性（点击展开）",
 why:`<p>· <b>A1 / A3 / A4 / B 由程序自动判分</b>：A1 用经典认知反射测验（Frederick, 2005）；A4 校准范式来自 Lichtenstein 等（1982）；B 部分测量真实行为而非态度。</p>
 <p>· <b>A2 与 C 部分采用清单式引导自评</b>：开放题在无大模型条件下无法自动批改，程序展示标准要点，由你对照勾选、程序汇总。请像批改别人的答卷一样评分。</p>
-<p>· <b>为什么测这六项</b>：它们是认知科学文献中与真实决策质量关联最紧密、且可训练的成分（详见 docs/05 参考文献）。</p>`,
+<p>· <b>为什么测这六项</b>：它们是认知科学文献中与真实决策质量关联最紧密、且可训练的成分（<a href="../docs/05-参考文献.md" style="color:#4da3ff">详见 docs/05 参考文献</a>）。</p>`,
 intro:`<h2>这套评估是什么</h2>
 <p>一份基于认知科学文献（CRT 认知反射、校准研究、超预测研究）设计的思考能力体检：约 90 分钟，产出你的<b>六维思考画像</b>、自动诊断与个性化 12 周提升方案。结果即时生成并自动保存在本设备，可随时导出或生成长图分享。</p>
 <h2>我们评估什么</h2>
@@ -87,7 +87,7 @@ histT:"历史记录",histNone:"暂无历史记录（报告会自动保存在本�
 a4rule:"对每个量给出你认为<b>有 90% 把握包含真实值</b>的区间。10 个区间期望命中 9 个——宁可宽，不要自信地窄。",
 lo:"下限",hi:"上限",reveal:"全部提交，揭晓答案",bnote:"凭<b>过去一年的真实行为</b>作答：1=从不，5=总是。",
 ctimer:"开始 40 分钟计时",cstop:"结束作答",crem:"剩余",
-crub:"对照你的分析，为每个维度选择最符合的等级（每级说明见 docs/02）。",
+crub:"对照你的分析，为每个维度选择最符合的等级（点选分数可见该档说明）。",
 score:"得分",dims:["理性/抗偏见","校准度","元认知","结构/深度","开放性","决策闭环"],
 diagT:"自动诊断",prescT:"你的训练处方",export:"导出 JSON（用于复测对比）",md:"下载 Markdown 报告",import:"导入基线 JSON 对比",
 delta:"与基线对比",reportTip:"建议 12 周训练后回来复测：重新完成评估并导入这次的 JSON，查看六维变化。",
@@ -100,7 +100,7 @@ dimHow:["A1 reflection items + A2 scenarios + A3 probability","A4 interval hits 
 whyTitle:"How scoring works & why it's valid (expand)",
 why:`<p>· <b>A1 / A3 / A4 / B are machine-graded</b>: A1 uses classic Cognitive Reflection items (Frederick, 2005); A4 follows the calibration paradigm of Lichtenstein et al. (1982); Part B measures actual behavior, not attitudes.</p>
 <p>· <b>A2 and Part C use checklist-guided self-grading</b>: open questions cannot be auto-graded without an LLM; the program shows model key points, you check coverage, the program aggregates. Grade as if you were marking someone else's paper.</p>
-<p>· <b>Why these six</b>: they are the components most tightly linked to real decision quality in the cognitive-science literature — and all trainable (see docs/05).</p>`,
+<p>· <b>Why these six</b>: they are the components most tightly linked to real decision quality in the cognitive-science literature — and all trainable (<a href="../docs/05-参考文献.md" style="color:#4da3ff">see docs/05</a>).</p>`,
 intro:`<h2>What this assessment is</h2>
 <p>A thinking-skills checkup grounded in cognitive science (CRT, calibration research, superforecasting). ~90 minutes; produces your <b>six-dimension thinking profile</b>, an automated diagnosis and a personalized 12-week plan. Results appear instantly, are saved on this device, and can be exported or shared as an image.</p>
 <h2>What we measure</h2>
@@ -118,7 +118,7 @@ histT:"History",histNone:"No history yet (reports are auto-saved in this browser
 a4rule:"For each quantity give an interval you are <b>90% confident</b> contains the true value. Expect 9 hits out of 10 — prefer wide over confidently narrow.",
 lo:"Low",hi:"High",reveal:"Submit all & reveal",bnote:"Answer by your <b>actual behavior in the past year</b>: 1 = never, 5 = always.",
 ctimer:"Start 40-min timer",cstop:"Finish writing",crem:"left",
-crub:"Against your written analysis, pick the level that best fits each dimension (full descriptors in docs/02).",
+crub:"Against your written analysis, pick the level that best fits each dimension (tap a score to see its description).",
 score:"Score",dims:["Rationality","Calibration","Metacognition","Structure/Depth","Open-mindedness","Decision Loop"],
 diagT:"Automated Diagnosis",prescT:"Your Training Prescription",export:"Export JSON (for retest comparison)",md:"Download Markdown report",import:"Import baseline JSON to compare",
 delta:"vs. baseline",reportTip:"Come back after 12 weeks of training: redo the assessment and import this JSON to see your change.",
@@ -183,6 +183,15 @@ const C=[
 ["反方考虑","只写有利面","一笔带过","回应一个反对","钢人论证并回应","Counter-views","One-sided only","Mentioned briefly","Answers one objection","Steelmans and rebuts"],
 ["不确定性","斩钉截铁","说了可能","给出置信度","给出改判条件","Uncertainty","Overly certain","Says 'maybe'","Gives confidence","States falsifiers"],
 ["可行动结论","无结论","方向空泛","明确下一步","步骤+时间+验证","Actionability","No conclusion","Vague direction","Clear next step","Steps+time+verification"]];
+/* C 部分七项思考结构：含义 + 练习方法 */
+const C7D=[
+{zh:"问题定义",en:"Problem definition",wz:"方向决定努力：问题定义错了，答案越正确，离目标越远。",we:"Wrong question, right answer — still wrong. Defining is half the solving.",gz:"每次分析前，强迫自己用一句话写出'真正要回答的问题'。",ge:"Before any analysis, force one sentence: 'the real question to answer'."},
+{zh:"结构拆解",en:"Decomposition",wz:"把大问题变成可下手的小问题，是思考深度的入口。",we:"Turning a big mess into workable pieces is the gateway to depth.",gz:"每个问题拆成 3–5 个相互独立的子问题，并排出优先级。",ge:"Split every problem into 3–5 independent sub-questions with priorities."},
+{zh:"假设识别",en:"Assumptions",wz:"每个结论都站在假设上；假设塌了，结论跟着塌。",we:"Every conclusion stands on assumptions; when one collapses, so does the conclusion.",gz:"列出假设，并标注'哪一个若为假，整个结论翻转'。",ge:"List assumptions and flag the one whose falsity flips the conclusion."},
+{zh:"证据使用",en:"Evidence",wz:"区分事实与猜测，让你的判断可被检验、可被修正。",we:"Separating fact from guess keeps your judgment auditable and fixable.",gz:"给每个关键判断标注【事实/推测】，并写明事实来源。",ge:"Label every key claim 【fact/guess】 and cite the source of facts."},
+{zh:"反方考虑",en:"Counter-views",wz:"只有回应过最强反对意见，你的立场才算立得住。",we:"Your position only stands once it has faced the strongest objection.",gz:"把反对意见写到对方认可的程度（钢人论证），再正面回应。",ge:"Steelman the opposition until they'd accept it, then rebut."},
+{zh:"不确定性表达",en:"Uncertainty",wz:"给出把握度与改判条件，是给未来的自己留修正入口。",we:"Confidence levels and falsifiers leave your future self an exit to correct course.",gz:"给结论标注把握度，并写明'什么新证据会让我改变结论'。",ge:"State confidence and write 'what new evidence would change my mind'."},
+{zh:"可行动结论",en:"Actionability",wz:"没有下一步和时间点的结论不是结论，是愿望。",we:"A conclusion without next steps and deadlines is a wish, not a conclusion.",gz:"给每个结论配上步骤 + 时间节点 + 验证方式。",ge:"Attach steps + deadlines + verification to every conclusion."}];
 /* ---------- state ---------- */
 let lang=(navigator.language||'zh').toLowerCase().startsWith('zh')?'zh':'en';
 let si=0, R=null;
@@ -226,7 +235,9 @@ A4.map((q,i)=>`<tr><td>${i+1}</td><td>${q[lang]}</td>
 `</table>${S.a4done?'':`<button class="btn" onclick="revealA4()">${t.reveal}</button>`}<div id="a4sum"></div>`;
 else if(si==5)a.innerHTML=`<p class="hint">B · ${t.bnote}</p>`+
 B.map((s,i)=>`<div class="q"><div class="t">${i+1}. ${lang=='zh'?s[0]:s[1]}</div><div class="seg">${[1,2,3,4,5].map(v=>`<button class="${S.b[i]==v?'on':''}" onclick="S.b[${i}]=${v};render()">${v}</button>`).join('')}</div></div>`).join('');
-else if(si==6)a.innerHTML=`<p class="hint">C · ${lang=='zh'?'选一个近三个月内真实面对、尚未解决的问题，按 docs/01 的七项结构完成分析（问题定义/拆解/假设/选项/证据标注/决策条件/自我审查）。':'Pick a real, unresolved problem from the last 3 months and analyze it following the 7-part structure in docs/01.'}</p>
+else if(si==6)a.innerHTML=`<p class="hint">C · ${lang=='zh'?'选一个近三个月内真实面对、尚未解决的问题，按下面的七项结构完成分析。':'Pick a real, unresolved problem from the last 3 months and analyze it with the seven-part structure below.'}</p>
+<details class="card" ${lang=='zh'?'open':''}><summary style="cursor:pointer;font-weight:600">${lang=='zh'?'📐 思考的七项结构：是什么、为什么重要、怎么练（点击展开）':'📐 The seven structures of thinking: what, why, how to train (expand)'}</summary>
+${C7D.map((d,i)=>`<div style="margin:10px 0"><b>${i+1}. ${lang=='zh'?d.zh:d.en}</b> <span class="small">${lang=='zh'?d.wz:d.we}</span><div class="small" style="opacity:.8">${lang=='zh'?'怎么练：':'Train: '}${lang=='zh'?d.gz:d.ge}</div></div>`).join('')}</details>
 <div class="card"><button class="btn ghost" id="ctbtn" onclick="toggleTimer()">${t.ctimer}</button> <span id="ct" class="pill"></span>
 <textarea data-k="c.text" style="min-height:240px" placeholder="...">${S.c.text}</textarea>
 <button class="btn ghost" onclick="stopTimer()">${t.cstop}</button></div>
@@ -293,6 +304,7 @@ const w1=order[0][1],w2=order[1][1];
 return {focus:[`${t.dims[w1]} (${d[w1]}%)`,`${t.dims[w2]} (${d[w2]}%)`],
 daily:[ACT[lang].daily[w1],ACT[lang].daily[w2]],
 weekly:[ACT[lang].weekly[w1],ACT[lang].weekly[w2]],
+c7:C7D.map(x=>(lang=='zh'?x.zh:x.en)+'：'+(lang=='zh'?x.gz:x.ge)),
 miles:[t.w12,t.w34,t.w56,t.w78,t.w912],
 rule:lang=='zh'?"只修这 1–2 个维度，坚持 4 周再评估；第 1–2 周只做最小动作。":"Fix only these 1–2 dimensions for 4 weeks; weeks 1–2 minimum actions only."};}
 function radarOn(ctx,cx,cy,r,vals,labels,font){ctx.strokeStyle='#2b3540';ctx.fillStyle='#93a1b0';ctx.font=font||'12px sans-serif';
@@ -314,12 +326,17 @@ a.innerHTML=`<h2>${t.score}</h2>
 <tr><td class="small">${lang=='zh'?'测什么':'Measures'}</td>${t.dimHow.map(x=>`<td class="small" style="font-size:11px">${x}</td>`).join('')}</tr></table>
 <div id="cmp"></div>
 <h2>${t.diagT}</h2><div class="card">${diagnosis().map(d=>`<p>• ${d}</p>`).join('')}</div>
+<h2>${lang=='zh'?'C 实战七项':'Part C · seven structures'}</h2><div class="card">
+<table><tr>${C7D.map(d=>`<th style="font-size:11px">${lang=='zh'?d.zh:d.en}</th>`).join('')}</tr>
+<tr>${R.scores.c.map((v,i)=>`<td class="${v<=1?'bad':''}" style="text-align:center">${v}/3</td>`).join('')}</tr></table>
+<p class="small">💡 ${(()=>{const wi=R.scores.c.indexOf(Math.min(...R.scores.c));return (lang=='zh'?'最弱项 ':'Weakest ')+(lang=='zh'?C7D[wi].zh:C7D[wi].en)+' — '+(lang=='zh'?C7D[wi].gz:C7D[wi].ge)})()}</p></div>
 <h2>${t.plan12}</h2><div class="card">
 <p><b>${lang=='zh'?'重点维度':'Focus'}：</b>${p.focus.join(' · ')}</p>
 <p><b>${t.daily}</b></p><ul>${p.daily.map(x=>`<li>${x}</li>`).join('')}</ul>
 <p><b>${t.weekly}</b></p><ul>${p.weekly.map(x=>`<li>${x}</li>`).join('')}</ul>
+<p><b>${lang=='zh'?'七项结构（在每周深度思考时练习）':'Seven structures (practice in weekly deep-thinking)'}</b></p><ul>${p.c7.map(x=>`<li class="small">${x}</li>`).join('')}</ul>
 <p><b>${t.miles}</b></p><ul>${p.miles.map(x=>`<li>${x}</li>`).join('')}</ul>
-<p class="small">${p.rule} ${lang=='zh'?'完整训练系统：docs/03；模板：docs/04。':'Full system: docs/03; templates: docs/04.'}</p>
+<p class="small">${p.rule} ${lang=='zh'?'延伸材料：':'Extras: '}<a href="../docs/03-训练系统.md" style="color:#4da3ff">${lang=='zh'?'12 周训练系统':'12-week system'}</a> · <a href="../docs/04-模板库.md" style="color:#4da3ff">${lang=='zh'?'模板库':'templates'}</a> · <a href="../docs/05-参考文献.md" style="color:#4da3ff">${lang=='zh'?'参考文献':'references'}</a></p>
 <p><a class="btn ghost" style="display:inline-block;text-decoration:none" href="training.html">${t.gym} →</a></p></div>
 <div class="card"><b>${t.histT}</b><div id="hist"></div></div>
 <p class="hint">${t.reportTip}</p>
@@ -335,7 +352,7 @@ function dlJSON(){const b=new Blob([JSON.stringify(R,null,1)],{type:'application
 const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`thinking-assessment-${R.date}.json`;a.click();}
 function mdReport(){const t=T[lang],s=R.scores,p=plan12();
 return `# ${t.title} — Report\n\nDate: ${R.date}\n\n## ${t.score}\n\n| | ${t.dims.join(' | ')} |\n|---|${t.dims.map(()=>'---').join('|')}|\n| % | ${R.dims.join('% | ')}% |\n\n`+
-`- A1: ${s.a1sum}/4 (gut-corrected: ${s.a1corrSum})\n- A2: ${s.a2sum.toFixed(2)}/6\n- A3: ${s.a3sum}/4\n- A4 hits: ${s.a4hits}/10\n- C: ${s.csum}/21\n\n## ${t.diagT}\n\n${diagnosis().map(d=>'- '+d).join('\n')}\n\n## ${t.plan12}\n\n${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}\n\n${t.daily}:\n${p.daily.map(x=>'- '+x).join('\n')}\n\n${t.weekly}:\n${p.weekly.map(x=>'- '+x).join('\n')}\n\n${t.miles}:\n${p.miles.map(x=>'- '+x).join('\n')}\n\n> ${p.rule}\n`;}
+`- A1: ${s.a1sum}/4 (gut-corrected: ${s.a1corrSum})\n- A2: ${s.a2sum.toFixed(2)}/6\n- A3: ${s.a3sum}/4\n- A4 hits: ${s.a4hits}/10\n- C: ${s.csum}/21 (${R.scores.c.join('/3, ')}/3)\n\n## ${t.diagT}\n\n${diagnosis().map(d=>'- '+d).join('\n')}\n\n## ${t.plan12}\n\n${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}\n\n${t.daily}:\n${p.daily.map(x=>'- '+x).join('\n')}\n\n${t.weekly}:\n${p.weekly.map(x=>'- '+x).join('\n')}\n\n${lang=='zh'?'七项结构':'Seven structures'}:\n${p.c7.map(x=>'- '+x).join('\n')}\n\n${t.miles}:\n${p.miles.map(x=>'- '+x).join('\n')}\n\n> ${p.rule}\n`;}
 /* ---------- history (localStorage) ---------- */
 function histGet(){try{return JSON.parse(localStorage.getItem('ta_history'))||[]}catch(e){return[]}}
 function saveHist(){const h=histGet(),last=h[h.length-1];
@@ -356,7 +373,7 @@ function secH(ctx,arr,maxW,lh){return arr.reduce((h,s)=>wrapTxt(ctx,s,0,0,maxW,l
 function dlPNG(){const t=T[lang],p=plan12(),diag=diagnosis();
 const W=750,M=40,maxW=W-2*M,lh=30;
 const cv=document.createElement('canvas');const ctx=cv.getContext('2d');ctx.font='15px sans-serif';
-const planLines=[`${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}`,t.daily+'：',...p.daily,t.weekly+'：',...p.weekly,t.miles+'：',...p.miles,p.rule];
+const planLines=[`${lang=='zh'?'重点维度':'Focus'}: ${p.focus.join(' · ')}`,t.daily+'：',...p.daily,t.weekly+'：',...p.weekly,`${lang=='zh'?'七项结构（每周深度思考）':'Seven structures'}:`,...p.c7,t.miles+'：',...p.miles,p.rule];
 const H=90+440+60+6*36+50+secH(ctx,diag,maxW-16,lh)+60+secH(ctx,planLines,maxW-16,lh)+80;
 cv.width=W;cv.height=H;
 ctx.fillStyle='#0f1419';ctx.fillRect(0,0,W,H);
